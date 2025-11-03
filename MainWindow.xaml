@@ -1,0 +1,116 @@
+﻿<Window x:Class="Projekt_zespołowy.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="AutoPartHub" Height="600" Width="900"
+        MinWidth="700" MinHeight="500">
+
+    <Window.Resources>
+        <!-- Styl dla przycisków -->
+        <Style x:Key="AuthButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Margin" Value="5,0"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Nagłówek aplikacji -->
+        <Border Background="Silver" Grid.Row="0" Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Tytuł -->
+                <TextBlock Text="AutoPartHub"
+                           FontSize="28" FontWeight="Bold" Foreground="Black"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" 
+                           FontFamily="Arial" Grid.Column="0"/>
+
+                <!-- Przyciski logowania/rejestracji -->
+                <StackPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Center">
+                    <Button Content="Zaloguj się" Style="{StaticResource AuthButtonStyle}" Background="#0078D7"
+            Click="BtnLogin_Click"/>
+                    <Button Content="Zarejestruj się" Style="{StaticResource AuthButtonStyle}" Background="#28A745"
+            Click="BtnRegister_Click"/>
+                    <Button Content="Wyloguj" Style="{StaticResource AuthButtonStyle}" Background="#DC3545"
+            Click="BtnLogout_Click"/>
+                    <Button Content="Panel Admina" Style="{StaticResource AuthButtonStyle}" Background="#FFA500"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Pasek nawigacyjny -->
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+            <WrapPanel HorizontalAlignment="Center" Margin="5">
+                <Button Width="150" Margin="5" Background="#0078D7" Foreground="White" FontWeight="Bold">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⚡" FontSize="16" Margin="0,0,5,0"/>
+                        <TextBlock Text="Układ Elektryczny"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Width="150" Margin="5" Background="#0078D7" Foreground="White" FontWeight="Bold">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🛑" FontSize="16" Margin="0,0,5,0"/>
+                        <TextBlock Text="Układ Hamulcowy"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Width="150" Margin="5" Background="#0078D7" Foreground="White" FontWeight="Bold">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⚙️" FontSize="16" Margin="0,0,5,0"/>
+                        <TextBlock Text="Układ Napędowy"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Width="150" Margin="5" Background="#0078D7" Foreground="White" FontWeight="Bold">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="💧" FontSize="16" Margin="0,0,5,0"/>
+                        <TextBlock Text="Oleje"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Width="150" Margin="5" Background="#0078D7" Foreground="White" FontWeight="Bold">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🔍" FontSize="16" Margin="0,0,5,0"/>
+                        <TextBlock Text="Filtry"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Width="150" Margin="5" Background="#0078D7" Foreground="White" FontWeight="Bold">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🔄" FontSize="16" Margin="0,0,5,0"/>
+                        <TextBlock Text="Sprzęgła"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Width="150" Margin="5" Background="#0078D7" Foreground="White" FontWeight="Bold">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="💿" FontSize="16" Margin="0,0,5,0"/>
+                        <TextBlock Text="Koła Dwumasowe"/>
+                    </StackPanel>
+                </Button>
+            </WrapPanel>
+        </ScrollViewer>
+
+        <!-- Główna zawartość z przewijaniem -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- Pusty Frame do wyświetlania podstron -->
+                <Frame x:Name="MainFrame" 
+                       NavigationUIVisibility="Hidden"
+                       Background="Transparent"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

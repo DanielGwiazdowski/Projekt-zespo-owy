@@ -20,6 +20,9 @@ namespace Projekt_zespołowy
         public MainWindow()
         {
             InitializeComponent();
+
+            // --- KOSZYK: zainicjalizuj badge po starcie ---
+            UpdateCartBadge();
         }
 
         private void BtnLogin_Click(object sender, RoutedEventArgs e)
@@ -57,6 +60,7 @@ namespace Projekt_zespołowy
                             (Window)((FrameworkElement)sender).Parent;
             window?.Close();
         }
+
         private bool IsLoggedIn = false; // tymczasowo, żeby kontrolować stan logowania
 
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
@@ -75,5 +79,62 @@ namespace Projekt_zespołowy
 
             MessageBox.Show("Wylogowano pomyślnie!", "Wylogowanie", MessageBoxButton.OK, MessageBoxImage.Information);
         }
+
+        // ================================
+        //           LOGIKA KOSZYKA
+        // ================================
+        private int _cartCount = 0;
+
+        /// <summary>
+        /// Aktualizuje widoczność i tekst badge'a na ikonie koszyka.
+        /// Bezpieczne, gdy kontrolki jeszcze nie są zmaterializowane.
+        /// </summary>
+        private void UpdateCartBadge()
+        {
+            // Jeżeli XAML nie ma tych elementów (np. inna strona), po prostu wyjdź.
+            if (CartBadge == null || CartCountText == null)
+                return;
+
+            CartCountText.Text = _cartCount.ToString();
+            CartBadge.Visibility = _cartCount > 0 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// Wywołuj, kiedy użytkownik doda przedmiot do koszyka.
+        /// </summary>
+        public void AddToCart(object? item = null)
+        {
+            _cartCount++;
+            UpdateCartBadge();
+        }
+
+        /// <summary>
+        /// Opcjonalnie: zmniejsz licznik (nie schodzi poniżej zera).
+        /// </summary>
+        public void RemoveFromCart(int qty = 1)
+        {
+            _cartCount -= qty;
+            if (_cartCount < 0) _cartCount = 0;
+            UpdateCartBadge();
+        }
+
+        /// <summary>
+        /// Kliknięcie w ikonę koszyka.
+        /// Jeżeli masz stronę koszyka (CartPage), odkomentuj nawigację.
+        /// </summary>
+        private void BtnCart_Click(object sender, RoutedEventArgs e)
+        {
+            // Jeśli masz stronę koszyka:
+            // MainFrame.Navigate(new CartPage());
+
+            // Na razie prosta informacja:
+            MessageBox.Show($"Koszyk: {_cartCount} element(ów).", "Koszyk",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        /// <summary>
+        /// (opcjonalnie) Wystaw licznik na zewnątrz, gdyby inne okna chciały go odczytać.
+        /// </summary>
+        public int CartCount => _cartCount;
     }
 }

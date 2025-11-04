@@ -13,16 +13,41 @@
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
         </Style>
+
+        <!-- Styl dla przycisku-ikony (koszyk) -->
+        <Style x:Key="IconOnlyButton" TargetType="Button">
+            <Setter Property="Width" Value="50"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Margin" Value="0,5,20,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="ToolTipService.ShowDuration" Value="4000"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="25">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <!-- Nagłówek -->
             <RowDefinition Height="Auto"/>
+            <!-- Kategorie -->
+            <RowDefinition Height="Auto"/>
+            <!-- Koszyk -->
             <RowDefinition Height="*"/>
+            <!-- Treść główna -->
         </Grid.RowDefinitions>
 
-        <!-- Nagłówek aplikacji -->
+        <!-- Nagłówek -->
         <Border Background="Silver" Grid.Row="0" Padding="10">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -30,26 +55,24 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Tytuł -->
                 <TextBlock Text="AutoPartHub"
                            FontSize="28" FontWeight="Bold" Foreground="Black"
-                           HorizontalAlignment="Center" VerticalAlignment="Center" 
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
                            FontFamily="Arial" Grid.Column="0"/>
 
-                <!-- Przyciski logowania/rejestracji -->
                 <StackPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Center">
                     <Button Content="Zaloguj się" Style="{StaticResource AuthButtonStyle}" Background="#0078D7"
-            Click="BtnLogin_Click"/>
+                            Click="BtnLogin_Click"/>
                     <Button Content="Zarejestruj się" Style="{StaticResource AuthButtonStyle}" Background="#28A745"
-            Click="BtnRegister_Click"/>
+                            Click="BtnRegister_Click"/>
                     <Button Content="Wyloguj" Style="{StaticResource AuthButtonStyle}" Background="#DC3545"
-            Click="BtnLogout_Click"/>
+                            Click="BtnLogout_Click"/>
                     <Button Content="Panel Admina" Style="{StaticResource AuthButtonStyle}" Background="#FFA500"/>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Pasek nawigacyjny -->
+        <!-- Pasek kategorii -->
         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
             <WrapPanel HorizontalAlignment="Center" Margin="5">
                 <Button Width="150" Margin="5" Background="#0078D7" Foreground="White" FontWeight="Bold">
@@ -103,11 +126,45 @@
             </WrapPanel>
         </ScrollViewer>
 
-        <!-- Główna zawartość z przewijaniem -->
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+        <!-- 🔽 KOSZYK POD PASKIEM KATEGORII, PO PRAWEJ -->
+        <Grid Grid.Row="2">
+            <Button x:Name="BtnCart"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource IconOnlyButton}"
+                    ToolTip="Koszyk"
+                    Click="BtnCart_Click">
+                <Grid>
+                    <TextBlock Text="&#xE7BF;"
+                               FontFamily="Segoe MDL2 Assets"
+                               FontSize="26"
+                               Foreground="Black"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                    <Border x:Name="CartBadge"
+                            Background="#DC3545"
+                            CornerRadius="8"
+                            Width="16" Height="16"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Margin="0,2,2,0"
+                            Visibility="Collapsed">
+                        <TextBlock x:Name="CartCountText"
+                                   Text="0"
+                                   Foreground="White"
+                                   FontSize="10"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                </Grid>
+            </Button>
+        </Grid>
+
+        <!-- Główna zawartość -->
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <!-- Pusty Frame do wyświetlania podstron -->
-                <Frame x:Name="MainFrame" 
+                <Frame x:Name="MainFrame"
                        NavigationUIVisibility="Hidden"
                        Background="Transparent"/>
             </StackPanel>

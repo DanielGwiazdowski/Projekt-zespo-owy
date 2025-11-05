@@ -1,14 +1,8 @@
-﻿using System.Text;
+﻿using Projekt_zespołowy.Views;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Data.SQLite;
 
 namespace Projekt_zespołowy
 {
@@ -17,12 +11,44 @@ namespace Projekt_zespołowy
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool IsLoggedIn = false; // tymczasowo, żeby kontrolować stan logowania
+        private int _cartCount = 0; // licznik koszyka
+
         public MainWindow()
         {
             InitializeComponent();
 
-            // --- KOSZYK: zainicjalizuj badge po starcie ---
+            // Inicjalizacja przy starcie
             UpdateCartBadge();
+            UpdateAuthButtons(); // ustawia widoczność przycisków logowania
+        }
+
+        // ================================
+        //        LOGIKA AUTORYZACJI
+        // ================================
+
+        /// <summary>
+        /// Uaktualnia widoczność przycisków logowania / rejestracji / wylogowania.
+        /// </summary>
+        private void UpdateAuthButtons()
+        {
+            if (IsLoggedIn)
+            {
+                BtnLogin.Visibility = Visibility.Collapsed;
+                BtnRegister.Visibility = Visibility.Collapsed;
+                BtnLogout.Visibility = Visibility.Visible;
+
+                // Tymczasowo ukrywamy panel admina
+                BtnAdmin.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                BtnLogin.Visibility = Visibility.Visible;
+                BtnRegister.Visibility = Visibility.Visible;
+                BtnLogout.Visibility = Visibility.Collapsed;
+
+                BtnAdmin.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void BtnLogin_Click(object sender, RoutedEventArgs e)
@@ -33,7 +59,10 @@ namespace Projekt_zespołowy
 
             if (result == true)
             {
-                // Tutaj możesz pobrać np. loginWindow.txtUsername.Text
+                // Po udanym logowaniu
+                IsLoggedIn = true;
+                UpdateAuthButtons();
+
                 MessageBox.Show($"Zalogowano użytkownika: {loginWindow.txtUsername.Text}",
                                 "Logowanie", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -47,21 +76,11 @@ namespace Projekt_zespołowy
 
             if (result == true)
             {
-                // Tutaj możesz pobrać np. dane rejestracyjne
+                // Po udanej rejestracji
                 MessageBox.Show($"Zarejestrowano użytkownika: {registerWindow.txtUsername.Text}",
                                 "Rejestracja", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
-
-        private void BtnCancel_Click(object sender, RoutedEventArgs e)
-        {
-            // Zamknięcie okna logowania/rejestracji po kliknięciu "Anuluj"
-            Window window = (Window)((FrameworkElement)sender).TemplatedParent ??
-                            (Window)((FrameworkElement)sender).Parent;
-            window?.Close();
-        }
-
-        private bool IsLoggedIn = false; // tymczasowo, żeby kontrolować stan logowania
 
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
@@ -73,6 +92,7 @@ namespace Projekt_zespołowy
 
             // Wylogowanie użytkownika
             IsLoggedIn = false;
+            UpdateAuthButtons();
 
             // Wyczyść zawartość głównego frame
             MainFrame.Navigate(null);
@@ -80,14 +100,20 @@ namespace Projekt_zespołowy
             MessageBox.Show("Wylogowano pomyślnie!", "Wylogowanie", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
+        private void BtnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            // Zamknięcie okna logowania/rejestracji po kliknięciu "Anuluj"
+            Window window = (Window)((FrameworkElement)sender).TemplatedParent ??
+                            (Window)((FrameworkElement)sender).Parent;
+            window?.Close();
+        }
+
         // ================================
         //           LOGIKA KOSZYKA
         // ================================
-        private int _cartCount = 0;
 
         /// <summary>
         /// Aktualizuje widoczność i tekst badge'a na ikonie koszyka.
-        /// Bezpieczne, gdy kontrolki jeszcze nie są zmaterializowane.
         /// </summary>
         private void UpdateCartBadge()
         {
@@ -100,7 +126,7 @@ namespace Projekt_zespołowy
         }
 
         /// <summary>
-        /// Wywołuj, kiedy użytkownik doda przedmiot do koszyka.
+        /// Dodaje element do koszyka.
         /// </summary>
         public void AddToCart(object? item = null)
         {
@@ -109,7 +135,7 @@ namespace Projekt_zespołowy
         }
 
         /// <summary>
-        /// Opcjonalnie: zmniejsz licznik (nie schodzi poniżej zera).
+        /// Usuwa element(y) z koszyka.
         /// </summary>
         public void RemoveFromCart(int qty = 1)
         {
@@ -120,20 +146,14 @@ namespace Projekt_zespołowy
 
         /// <summary>
         /// Kliknięcie w ikonę koszyka.
-        /// Jeżeli masz stronę koszyka (CartPage), odkomentuj nawigację.
         /// </summary>
         private void BtnCart_Click(object sender, RoutedEventArgs e)
         {
-            // Jeśli masz stronę koszyka:
-            // MainFrame.Navigate(new CartPage());
-
-            // Na razie prosta informacja:
-            MessageBox.Show($"Koszyk: {_cartCount} element(ów).", "Koszyk",
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            MainFrame.Navigate(new Projekt_zespołowy.Views.CartPage());
         }
 
         /// <summary>
-        /// (opcjonalnie) Wystaw licznik na zewnątrz, gdyby inne okna chciały go odczytać.
+        /// Odczyt aktualnej liczby elementów w koszyku.
         /// </summary>
         public int CartCount => _cartCount;
     }

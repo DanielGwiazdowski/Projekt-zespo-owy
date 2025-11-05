@@ -61,13 +61,14 @@
                            FontFamily="Arial" Grid.Column="0"/>
 
                 <StackPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Center">
-                    <Button Content="Zaloguj się" Style="{StaticResource AuthButtonStyle}" Background="#0078D7"
-                            Click="BtnLogin_Click"/>
-                    <Button Content="Zarejestruj się" Style="{StaticResource AuthButtonStyle}" Background="#28A745"
-                            Click="BtnRegister_Click"/>
-                    <Button Content="Wyloguj" Style="{StaticResource AuthButtonStyle}" Background="#DC3545"
-                            Click="BtnLogout_Click"/>
-                    <Button Content="Panel Admina" Style="{StaticResource AuthButtonStyle}" Background="#FFA500"/>
+                    <Button x:Name="BtnLogin" Content="Zaloguj się" Style="{StaticResource AuthButtonStyle}" Background="#0078D7"
+            Click="BtnLogin_Click"/>
+                    <Button x:Name="BtnRegister" Content="Zarejestruj się" Style="{StaticResource AuthButtonStyle}" Background="#28A745"
+            Click="BtnRegister_Click"/>
+                    <Button x:Name="BtnLogout" Content="Wyloguj" Style="{StaticResource AuthButtonStyle}" Background="#DC3545"
+            Click="BtnLogout_Click" Visibility="Collapsed"/>
+                    <Button x:Name="BtnAdmin" Content="Panel Admina" Style="{StaticResource AuthButtonStyle}" Background="#FFA500"
+            Visibility="Collapsed"/>
                 </StackPanel>
             </Grid>
         </Border>

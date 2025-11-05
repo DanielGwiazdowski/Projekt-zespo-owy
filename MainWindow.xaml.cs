@@ -149,7 +149,11 @@ namespace Projekt_zespołowy
         /// </summary>
         private void BtnCart_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new Projekt_zespołowy.Views.CartPage());
+            var cartWindow = new Projekt_zespołowy.Views.CartPage
+            {
+                Owner = this
+            };
+            cartWindow.ShowDialog();
         }
 
         /// <summary>

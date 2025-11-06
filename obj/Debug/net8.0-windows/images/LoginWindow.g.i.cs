@@ -76,7 +76,7 @@ namespace czesci1 {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Projekt zespołowy;component/images/loginwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Projekt zespołowy;V1.0.0.0;component/images/loginwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\images\LoginWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

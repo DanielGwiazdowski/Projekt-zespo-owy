@@ -52,7 +52,7 @@ namespace Projekt_zespołowy.Views {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Projekt zespołowy;V1.0.0.0;component/cartwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Projekt zespołowy;component/cartwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\CartWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

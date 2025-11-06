@@ -4,6 +4,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
+// DODANE
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Windows.Input;
+using System.Windows.Shapes;
+
 namespace Projekt_zespołowy
 {
     /// <summary>
@@ -160,5 +167,248 @@ namespace Projekt_zespołowy
         /// Odczyt aktualnej liczby elementów w koszyku.
         /// </summary>
         public int CartCount => _cartCount;
+
+        // =====================================================================
+        //                          🔽 DODANE: FILTRY
+        // =====================================================================
+
+        // Pola stanu filtrów
+        private Slider _priceMinSlider, _priceMaxSlider;
+        private TextBlock _priceMinLabel, _priceMaxLabel;
+        private CheckBox _brandLuk, _brandSachs, _brandValeo;
+        private const int PRICE_MIN = 1500;
+        private const int PRICE_MAX = 2000;
+
+        /// <summary>
+        /// Bez zmiany XAML-a dobudowujemy panel filtrów po lewej
+        /// w momencie, gdy zawartość okna jest już załadowana.
+        /// </summary>
+        protected override void OnContentRendered(EventArgs e)
+        {
+            base.OnContentRendered(e);
+            try
+            {
+                InjectFiltersPanel();
+            }
+            catch
+            {
+                // Jeśli layout się jeszcze nie zmaterializował — spróbujemy raz.
+                Dispatcher.InvokeAsync(() =>
+                {
+                    try { InjectFiltersPanel(); } catch { /* ignorujemy */ }
+                });
+            }
+        }
+
+        private void InjectFiltersPanel()
+        {
+            // Znajdź jedynego ScrollViewera w oknie (ten z MainFrame)
+            var mainScroll = FindDescendant<ScrollViewer>(this);
+            if (mainScroll == null) return;
+
+            // Jeżeli już wstrzyknięte — nie rób nic
+            if (mainScroll.Content is Grid g && g.Tag as string == "InjectedWithFilters")
+                return;
+
+            // Zapamiętaj oryginalną zawartość (StackPanel z Frame)
+            var originalContent = mainScroll.Content as FrameworkElement;
+            if (originalContent == null) return;
+
+            // Nowy grid 2-kolumnowy: lewo — filtry, prawo — Twoja treść
+            var host = new Grid { Margin = new Thickness(0) };
+            host.Tag = "InjectedWithFilters";
+            host.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(320) });
+            host.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+            // 1) Panel filtrów
+            var filtersBorder = BuildFiltersUi();
+            Grid.SetColumn(filtersBorder, 0);
+            host.Children.Add(filtersBorder);
+
+            // 2) Oryginalna treść po prawej
+            originalContent.Margin = new Thickness(0, 0, 0, 0);
+            Grid.SetColumn(originalContent, 1);
+            host.Children.Add(originalContent);
+
+            // Podmień zawartość ScrollViewera
+            mainScroll.Content = host;
+        }
+
+        private Border BuildFiltersUi()
+        {
+            var border = new Border
+            {
+                Background = Brushes.White,
+                BorderBrush = (Brush)new BrushConverter().ConvertFromString("#e6e6e6"),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(12),
+                Padding = new Thickness(16),
+                Margin = new Thickness(12, 0, 12, 0)
+            };
+
+            var stack = new StackPanel();
+            border.Child = stack;
+
+            // Nagłówek
+            stack.Children.Add(new TextBlock
+            {
+                Text = "Filtry",
+                FontSize = 28,
+                FontWeight = FontWeights.Bold,
+                Margin = new Thickness(0, 0, 0, 20)
+            });
+
+            // Cena
+            stack.Children.Add(new TextBlock
+            {
+                Text = "Cena",
+                FontSize = 16,
+                FontWeight = FontWeights.SemiBold
+            });
+
+            var slidersGrid = new Grid { Margin = new Thickness(0, 12, 0, 4) };
+            slidersGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            slidersGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(16) });
+            slidersGrid.ColumnDefinitions.Add(new ColumnDefinition());
+
+            _priceMinSlider = new Slider
+            {
+                Minimum = PRICE_MIN,
+                Maximum = PRICE_MAX,
+                Value = PRICE_MIN,
+                TickFrequency = 50,
+                IsSnapToTickEnabled = true
+            };
+            _priceMinSlider.ValueChanged += PriceSlider_ValueChanged;
+
+            _priceMaxSlider = new Slider
+            {
+                Minimum = PRICE_MIN,
+                Maximum = PRICE_MAX,
+                Value = PRICE_MAX,
+                TickFrequency = 50,
+                IsSnapToTickEnabled = true
+            };
+            _priceMaxSlider.ValueChanged += PriceSlider_ValueChanged;
+
+            Grid.SetColumn(_priceMinSlider, 0);
+            Grid.SetColumn(_priceMaxSlider, 2);
+            slidersGrid.Children.Add(_priceMinSlider);
+            slidersGrid.Children.Add(_priceMaxSlider);
+
+            stack.Children.Add(slidersGrid);
+
+            // Etykiety zakresu
+            var labelsGrid = new Grid();
+            labelsGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            labelsGrid.ColumnDefinitions.Add(new ColumnDefinition());
+
+            _priceMinLabel = new TextBlock
+            {
+                Text = $"{PRICE_MIN} PLN",
+                Foreground = new SolidColorBrush(Color.FromRgb(85, 85, 85)),
+                HorizontalAlignment = HorizontalAlignment.Left
+            };
+            _priceMaxLabel = new TextBlock
+            {
+                Text = $"{PRICE_MAX} PLN",
+                Foreground = new SolidColorBrush(Color.FromRgb(85, 85, 85)),
+                HorizontalAlignment = HorizontalAlignment.Right
+            };
+            Grid.SetColumn(_priceMinLabel, 0);
+            Grid.SetColumn(_priceMaxLabel, 1);
+            labelsGrid.Children.Add(_priceMinLabel);
+            labelsGrid.Children.Add(_priceMaxLabel);
+
+            stack.Children.Add(labelsGrid);
+
+            stack.Children.Add(new Separator { Margin = new Thickness(0, 16, 0, 12) });
+
+            // Marka
+            stack.Children.Add(new TextBlock
+            {
+                Text = "Marka",
+                FontSize = 16,
+                FontWeight = FontWeights.SemiBold,
+                Margin = new Thickness(0, 0, 0, 8)
+            });
+
+            _brandLuk = new CheckBox { Content = "LUK", FontSize = 14, Margin = new Thickness(0, 6, 0, 0) };
+            _brandSachs = new CheckBox { Content = "Sachs", FontSize = 14, Margin = new Thickness(0, 6, 0, 0) };
+            _brandValeo = new CheckBox { Content = "Valeo", FontSize = 14, Margin = new Thickness(0, 6, 0, 0) };
+
+            stack.Children.Add(_brandLuk);
+            stack.Children.Add(_brandSachs);
+            stack.Children.Add(_brandValeo);
+
+            var apply = new Button
+            {
+                Content = "Zastosuj",
+                Margin = new Thickness(0, 20, 0, 0),
+                Padding = new Thickness(12, 8, 12, 8),
+                Background = (Brush)new BrushConverter().ConvertFromString("#1f6feb"),
+                Foreground = Brushes.White,
+                BorderBrush = (Brush)new BrushConverter().ConvertFromString("#1f6feb"),
+                FontWeight = FontWeights.SemiBold,
+                Cursor = Cursors.Hand
+            };
+            apply.Click += Apply_Click;
+
+            stack.Children.Add(apply);
+
+            return border;
+        }
+
+        private void PriceSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            // Pilnujemy relacji MIN <= MAX
+            if (_priceMinSlider == null || _priceMaxSlider == null) return;
+
+            if (_priceMinSlider.Value > _priceMaxSlider.Value)
+            {
+                if (sender == _priceMinSlider)
+                    _priceMaxSlider.Value = _priceMinSlider.Value;
+                else
+                    _priceMinSlider.Value = _priceMaxSlider.Value;
+            }
+
+            if (_priceMinLabel != null) _priceMinLabel.Text = $"{(int)_priceMinSlider.Value} PLN";
+            if (_priceMaxLabel != null) _priceMaxLabel.Text = $"{(int)_priceMaxSlider.Value} PLN";
+        }
+
+        private void Apply_Click(object sender, RoutedEventArgs e)
+        {
+            int min = (int)_priceMinSlider.Value;
+            int max = (int)_priceMaxSlider.Value;
+
+            var brands = new List<string>();
+            if (_brandLuk.IsChecked == true) brands.Add("LUK");
+            if (_brandSachs.IsChecked == true) brands.Add("Sachs");
+            if (_brandValeo.IsChecked == true) brands.Add("Valeo");
+
+            // << TU PODPINASZ WŁASNĄ LOGIKĘ FILTROWANIA >>
+            // Np. przefiltruj kolekcję produktów i odśwież widok listy.
+            // FilterProducts(min, max, brands);
+
+            MessageBox.Show(
+                $"Zakres ceny: {min}–{max} PLN\nMarki: {(brands.Count == 0 ? "wszystkie" : string.Join(", ", brands))}",
+                "Zastosowano filtry",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        // Pomocnicza funkcja do wyszukania elementu w drzewie
+        private static T? FindDescendant<T>(DependencyObject root) where T : DependencyObject
+        {
+            if (root == null) return null;
+            int count = VisualTreeHelper.GetChildrenCount(root);
+            for (int i = 0; i < count; i++)
+            {
+                var child = VisualTreeHelper.GetChild(root, i);
+                if (child is T t) return t;
+                var result = FindDescendant<T>(child);
+                if (result != null) return result;
+            }
+            return null;
+        }
     }
 }

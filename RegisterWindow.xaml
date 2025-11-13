@@ -89,11 +89,13 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button Content="Anuluj" Grid.Column="0" HorizontalAlignment="Left" 
-                            Width="100" Background="#E0E0E0" Foreground="Black"/>
+					<Button Content="Anuluj" Grid.Column="0" HorizontalAlignment="Left"
+                        Width="100" Background="#E0E0E0" Foreground="Black"
+                        Click="BtnCancel_Click"/>
 
-                    <Button Content="Zarejestruj" Grid.Column="1" HorizontalAlignment="Right"
-                            Width="100" Background="#0078D7" Foreground="White"/>
+					<Button Content="Zarejestruj" Grid.Column="1" HorizontalAlignment="Right"
+                        Width="100" Background="#0078D7" Foreground="White"
+                        Click="BtnRegister_Click"/>
                 </Grid>
             </Border>
         </Grid>

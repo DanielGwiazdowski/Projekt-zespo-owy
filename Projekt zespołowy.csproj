@@ -10,8 +10,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SQLitePCLRaw.core" Version="3.0.2" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.11" />
     <PackageReference Include="System.Data.SQLite" Version="2.0.2" />
     <PackageReference Include="System.Data.SQLite.EF6" Version="2.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="bazaAPH.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

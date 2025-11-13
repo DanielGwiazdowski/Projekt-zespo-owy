@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,24 +16,84 @@ using System.Windows.Shapes;
 
 namespace Projekt_zespołowy
 {
-    /// <summary>
-    /// Logika interakcji dla klasy LoginWindow.xaml
-    /// </summary>
     public partial class LoginWindow : Window
     {
+        private string connectionString = "Data Source=bazaAPH.db;Version=3;";
+
         public LoginWindow()
         {
             InitializeComponent();
         }
+
         private void BtnLogin_Click(object sender, RoutedEventArgs e)
         {
-            // Możesz tutaj dodać walidację pól
-            this.DialogResult = true; // zamyka okno i zwraca true
+            string username = txtUsername.Text.Trim();
+            string password = txtPassword.Password;
+
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            {
+                MessageBox.Show("Proszę wprowadzić nazwę użytkownika i hasło.", "Błąd", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                using (var conn = new SQLiteConnection(connectionString))
+                {
+                    conn.Open();
+
+                    string query = "SELECT haslo_hash, rola FROM uzytkownicy WHERE login = @login";
+                    using (var cmd = new SQLiteCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@login", username);
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string storedHash = reader["haslo_hash"].ToString();
+                                string role = reader["rola"].ToString();
+
+                                if (VerifyPassword(password, storedHash))
+                                {
+                                    MessageBox.Show($"Zalogowano jako {username} ({role})", "Sukces", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    this.DialogResult = true;
+                                    return;
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Nieprawidłowe hasło.", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("Nie znaleziono użytkownika.", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Błąd połączenia z bazą danych: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = false; // zamyka okno i zwraca false
+            this.DialogResult = false;
+        }
+
+        // Funkcja do weryfikacji hasła SHA-256
+        private bool VerifyPassword(string password, string storedHash)
+        {
+            using (SHA256 sha = SHA256.Create())
+            {
+                byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+                byte[] hashBytes = sha.ComputeHash(passwordBytes);
+                string hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+
+                return hashString == storedHash.ToLower();
+            }
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Projekt_zespołowy.Views
         {
             InitializeComponent();
             Language = System.Windows.Markup.XmlLanguage.GetLanguage("pl-PL");
-            DataContext = Store;
+            DataContext = Store;   // ← powiązanie z koszykiem
         }
 
         private void Increase_Click(object sender, RoutedEventArgs e)
@@ -47,6 +47,7 @@ namespace Projekt_zespołowy.Views
         }
 
         // ====== MODEL + "STORE" ======
+
         public class CartItem : INotifyPropertyChanged
         {
             private int _quantity;
@@ -89,23 +90,35 @@ namespace Projekt_zespołowy.Views
             public void AddOrIncrease(string sku, string name, decimal unitPrice, int quantity = 1, string imagePath = null)
             {
                 var existing = Items.FirstOrDefault(i => i.Sku == sku);
-                if (existing != null)
+                if (existing == null)
                 {
-                    existing.Quantity += quantity;
-                }
-                else
-                {
-                    Items.Add(new CartItem
+                    var newItem = new CartItem
                     {
                         Sku = sku,
                         Name = name,
                         UnitPrice = unitPrice,
                         Quantity = Math.Max(1, quantity),
                         ImagePath = imagePath
-                    });
+                    };
+
+                    // SUBSKRYPCJA ZMIANY QUANTITY I LINETOTAL
+                    newItem.PropertyChanged += Item_PropertyChanged;
+
+                    Items.Add(newItem);
                 }
+
                 RaiseTotals();
             }
+
+            private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
+            {
+                if (e.PropertyName == nameof(CartItem.Quantity) ||
+                    e.PropertyName == nameof(CartItem.LineTotal))
+                {
+                    RaiseTotals();
+                }
+            }
+
 
             public void Remove(CartItem item)
             {
@@ -132,5 +145,8 @@ namespace Projekt_zespołowy.Views
         }
 
         private static readonly CartStore Store = new CartStore();
+
+        // ====== DODANE: PUBLICZNY STORE DO UŻYCIA W MainWindow ======
+        public static CartStore SharedStore => Store;
     }
 }

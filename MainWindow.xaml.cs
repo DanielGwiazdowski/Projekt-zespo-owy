@@ -32,7 +32,6 @@ namespace Projekt_zespołowy
             UpdateCartBadge();
             UpdateAuthButtons();
 
-            // Pobierz produkty raz z bazy i zachowaj je w pamięci
             try
             {
                 _allProducts = PobierzProdukty() ?? new List<Produkt>();
@@ -43,17 +42,12 @@ namespace Projekt_zespołowy
                 _allProducts = new List<Produkt>();
             }
 
-            // Na start pokazujemy wszystkie produkty
             _currentFilteredProducts = new List<Produkt>(_allProducts);
             WyswietlProdukty(_currentFilteredProducts);
 
-            // DODATKOWE: log dla debugowania
             Console.WriteLine($"[DEBUG] Załadowano {_allProducts.Count} produktów z bazy.");
         }
 
-        // ==============================
-        //   AUTH / UI (bez zmian)
-        // ==============================
         private void UpdateAuthButtons()
         {
             if (IsLoggedIn)
@@ -86,8 +80,7 @@ namespace Projekt_zespołowy
                 if (LoggedUserRole == "admin")
                     BtnAdmin.Visibility = Visibility.Visible;
 
-                MessageBox.Show($"Zalogowano użytkownika: {loginWindow.Username}",
-                                "Logowanie", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Zalogowano użytkownika: {loginWindow.Username}");
             }
         }
 
@@ -98,8 +91,7 @@ namespace Projekt_zespołowy
 
             if (result == true)
             {
-                MessageBox.Show($"Zarejestrowano użytkownika: {registerWindow.txtUsername.Text}",
-                                "Rejestracja", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Zarejestrowano użytkownika: {registerWindow.txtUsername.Text}");
             }
         }
 
@@ -107,16 +99,17 @@ namespace Projekt_zespołowy
         {
             if (!IsLoggedIn)
             {
-                MessageBox.Show("Nie jesteś zalogowany!", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Nie jesteś zalogowany!");
                 return;
             }
 
             IsLoggedIn = false;
-            UpdateAuthButtons();
             LoggedUserRole = "";
+            UpdateAuthButtons();
             BtnAdmin.Visibility = Visibility.Collapsed;
             MainFrame.Navigate(null);
-            MessageBox.Show("Wylogowano pomyślnie!", "Wylogowanie", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            MessageBox.Show("Wylogowano pomyślnie!");
         }
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
@@ -143,9 +136,6 @@ namespace Projekt_zespołowy
             public string Zdjecie { get; set; } = "";
         }
 
-        // ==============================
-        //   POBIERANIE Z BAZY (jak wcześniej)
-        // ==============================
         private List<Produkt> PobierzProdukty()
         {
             var produkty = new List<Produkt>();
@@ -157,35 +147,28 @@ namespace Projekt_zespołowy
                 string query = "SELECT * FROM produkty";
 
                 using (var cmd = new SQLiteCommand(query, conn))
+                using (var reader = cmd.ExecuteReader())
                 {
-                    using (var reader = cmd.ExecuteReader())
+                    while (reader.Read())
                     {
-                        while (reader.Read())
+                        produkty.Add(new Produkt
                         {
-                            produkty.Add(new Produkt
-                            {
-                                Id = Convert.ToInt32(reader["id_produktu"]),
-                                Nazwa = reader["nazwa"]?.ToString() ?? "",
-                                Opis = reader["opis"]?.ToString() ?? "",
-                                Producent = reader["producent"]?.ToString() ?? "",
-                                Kategoria = reader["kategoria"]?.ToString() ?? "",
-                                Cena = reader["cena_netto"] != DBNull.Value ? Convert.ToDecimal(reader["cena_netto"]) : 0,
-                                Zdjecie = reader["zdjecie"]?.ToString() ?? ""
-                            });
-                        }
+                            Id = Convert.ToInt32(reader["id_produktu"]),
+                            Nazwa = reader["nazwa"]?.ToString() ?? "",
+                            Opis = reader["opis"]?.ToString() ?? "",
+                            Producent = reader["producent"]?.ToString() ?? "",
+                            Kategoria = reader["kategoria"]?.ToString() ?? "",
+                            Cena = reader["cena_netto"] != DBNull.Value ? Convert.ToDecimal(reader["cena_netto"]) : 0,
+                            Zdjecie = reader["zdjecie"]?.ToString() ?? ""
+                        });
                     }
                 }
             }
-
             return produkty;
         }
 
-        // ==============================
-        //   WYŚWIETLANIE PRODUKTÓW
-        // ==============================
         private void WyswietlProdukty(List<Produkt> produkty)
         {
-            // Debug: pokaż ile produktów chce się wyświetlić
             Console.WriteLine($"[DEBUG] WyswietlProdukty: {produkty?.Count ?? 0} elementów");
 
             ProductsWrapPanel.Children.Clear();
@@ -232,7 +215,12 @@ namespace Projekt_zespołowy
                             bitmap.CacheOption = BitmapCacheOption.OnLoad;
                             bitmap.EndInit();
 
-                            var img = new Image { Source = bitmap, Height = 100, Stretch = Stretch.Uniform };
+                            var img = new Image
+                            {
+                                Source = bitmap,
+                                Height = 100,
+                                Stretch = Stretch.Uniform
+                            };
                             panel.Children.Add(img);
                         }
                         else
@@ -240,23 +228,17 @@ namespace Projekt_zespołowy
                             panel.Children.Add(new TextBlock
                             {
                                 Text = "[brak zdjęcia]",
-                                FontStyle = FontStyles.Italic,
-                                TextAlignment = TextAlignment.Center,
-                                Margin = new Thickness(5)
+                                TextAlignment = TextAlignment.Center
                             });
-                            Console.WriteLine($"Brak pliku: {fullPath}");
                         }
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         panel.Children.Add(new TextBlock
                         {
-                            Text = "[błąd ładowania zdjęcia]",
-                            FontStyle = FontStyles.Italic,
-                            TextAlignment = TextAlignment.Center,
-                            Margin = new Thickness(5)
+                            Text = "[błąd zdjęcia]",
+                            TextAlignment = TextAlignment.Center
                         });
-                        Console.WriteLine($"Błąd wczytywania obrazu: {ex.Message}");
                     }
                 }
 
@@ -278,13 +260,34 @@ namespace Projekt_zespołowy
                 };
                 panel.Children.Add(cena);
 
+                // ==========================================================
+                // =============== DODANY PRZYCISK „DODAJ DO KOSZYKA” =======
+                // ==========================================================
+
+                var btnAdd = new Button
+                {
+                    Content = "Dodaj do koszyka",
+                    Margin = new Thickness(5, 10, 5, 0),
+                    Padding = new Thickness(6, 4, 6, 4),
+                    Background = Brushes.LightGreen,
+                    BorderBrush = Brushes.DarkGreen,
+                    Cursor = Cursors.Hand
+                };
+
+                btnAdd.Click += (s, e) =>
+                {
+                    AddToCart(p);
+                    MessageBox.Show($"Dodano do koszyka: {p.Nazwa}");
+                };
+
+                panel.Children.Add(btnAdd);
+
+                // ==========================================================
+
                 ProductsWrapPanel.Children.Add(border);
             }
         }
 
-        // ==============================
-        //   KOSZYK (bez zmian)
-        // ==============================
         private void UpdateCartBadge()
         {
             if (CartBadge == null || CartCountText == null) return;
@@ -292,9 +295,17 @@ namespace Projekt_zespołowy
             CartBadge.Visibility = _cartCount > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public void AddToCart(object? item = null)
+        public void AddToCart(Produkt produkt)
         {
-            _cartCount++;
+            CartPage.SharedStore.AddOrIncrease(
+                sku: produkt.Id.ToString(),
+                name: produkt.Nazwa,
+                unitPrice: produkt.Cena,
+                quantity: 1,
+                imagePath: produkt.Zdjecie
+            );
+
+            _cartCount = CartPage.SharedStore.ItemsCount;
             UpdateCartBadge();
         }
 
@@ -443,6 +454,7 @@ namespace Projekt_zespołowy
                 Foreground = new SolidColorBrush(Color.FromRgb(85, 85, 85)),
                 HorizontalAlignment = HorizontalAlignment.Right
             };
+
             Grid.SetColumn(_priceMinLabel, 0);
             Grid.SetColumn(_priceMaxLabel, 1);
             labelsGrid.Children.Add(_priceMinLabel);
@@ -497,16 +509,13 @@ namespace Projekt_zespołowy
                     _priceMinSlider.Value = _priceMaxSlider.Value;
             }
 
-            if (_priceMinLabel != null) _priceMinLabel.Text = $"{(int)_priceMinSlider.Value} PLN";
-            if (_priceMaxLabel != null) _priceMaxLabel.Text = $"{(int)_priceMaxSlider.Value} PLN";
+            if (_priceMinLabel != null)
+                _priceMinLabel.Text = $"{(int)_priceMinSlider.Value} PLN";
+
+            if (_priceMaxLabel != null)
+                _priceMaxLabel.Text = $"{(int)_priceMaxSlider.Value} PLN";
         }
 
-        // ==============================
-        //   FILTRACJA — IMPLEMENTACJA
-        // ==============================
-        /// <summary>
-        /// Natychmiastowe filtrowanie po kategorii — nadpisuje _currentFilteredProducts.
-        /// </summary>
         public void FilterByCategory(string? category)
         {
             if (string.IsNullOrWhiteSpace(category))
@@ -515,24 +524,20 @@ namespace Projekt_zespołowy
             }
             else
             {
-                // Uwaga: porównujemy ignorując wielkość liter
                 _currentFilteredProducts = _allProducts
                     .Where(p => !string.IsNullOrEmpty(p.Kategoria) &&
                                 p.Kategoria.Equals(category, StringComparison.OrdinalIgnoreCase))
                     .ToList();
             }
 
-            // Debug: pokaż, ile elementów po kategorii
             Console.WriteLine($"[DEBUG] FilterByCategory('{category}') => {_currentFilteredProducts.Count} produktów");
             WyswietlProdukty(_currentFilteredProducts);
         }
 
-        /// <summary>
-        /// Zastosuj filtry z lewego panelu (działa na _currentFilteredProducts).
-        /// </summary>
         private void ApplyFilters_Click(object sender, RoutedEventArgs e)
         {
-            if (_currentFilteredProducts == null) _currentFilteredProducts = new List<Produkt>(_allProducts);
+            if (_currentFilteredProducts == null)
+                _currentFilteredProducts = new List<Produkt>(_allProducts);
 
             int min = (int)(_priceMinSlider?.Value ?? PRICE_MIN);
             int max = (int)(_priceMaxSlider?.Value ?? PRICE_MAX);
@@ -542,62 +547,59 @@ namespace Projekt_zespołowy
             if (_brandSachs.IsChecked == true) brands.Add("Sachs");
             if (_brandValeo.IsChecked == true) brands.Add("Valeo");
 
-            // Filtrujemy tylko na aktualnej liście (np. wcześniej wyfiltrowanej po kategorii)
             var filtered = _currentFilteredProducts.Where(p => p.Cena >= min && p.Cena <= max);
 
             if (brands.Count > 0)
             {
-                // Porównanie producenta bez rozróżnienia wielkości liter
                 filtered = filtered.Where(p => !string.IsNullOrEmpty(p.Producent) &&
-                                               brands.Any(b => string.Equals(b, p.Producent, StringComparison.OrdinalIgnoreCase)));
+                                               brands.Any(b =>
+                                                   string.Equals(b, p.Producent, StringComparison.OrdinalIgnoreCase)));
             }
 
             _currentFilteredProducts = filtered.ToList();
 
-            // Debug: pokaż co zostało
-            Console.WriteLine($"[DEBUG] ApplyFilters => {_currentFilteredProducts.Count} produktów po zastosowaniu filtrów");
+            Console.WriteLine($"[DEBUG] ApplyFilters => {_currentFilteredProducts.Count}");
             WyswietlProdukty(_currentFilteredProducts);
 
-            MessageBox.Show($"Zastosowano filtry. Wynik: {_currentFilteredProducts.Count} produktów.", "Filtry", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show($"Zastosowano filtry. Wynik: {_currentFilteredProducts.Count} produktów.");
         }
+
         private void ClearFilters_Click(object sender, RoutedEventArgs e)
         {
-            // Przywrócenie sliderów
             SliderMin.Value = 1500;
             SliderMax.Value = 2000;
 
             LabelMin.Text = "1500 PLN";
             LabelMax.Text = "2000 PLN";
 
-            // Odznaczenie checkboxów
             CheckLUK.IsChecked = false;
             CheckSachs.IsChecked = false;
             CheckValeo.IsChecked = false;
 
-            // Przywrócenie pełnej listy produktów
             _currentFilteredProducts = new List<Produkt>(_allProducts);
-
-            // Odświeżenie widoku produktów
             WyswietlProdukty(_currentFilteredProducts);
         }
 
-        // Przykładowy handler przycisku kategorii - podłącz go w XAML do przycisku „Oleje”
         private void BtnOleje_Click(object sender, RoutedEventArgs e)
         {
             FilterByCategory("oleje");
         }
 
-        // Pomocnicza funkcja do wyszukania elementu w drzewie
         private static T? FindDescendant<T>(DependencyObject root) where T : DependencyObject
         {
             if (root == null) return null;
             int count = VisualTreeHelper.GetChildrenCount(root);
+
             for (int i = 0; i < count; i++)
             {
                 var child = VisualTreeHelper.GetChild(root, i);
-                if (child is T t) return t;
+
+                if (child is T t)
+                    return t;
+
                 var result = FindDescendant<T>(child);
-                if (result != null) return result;
+                if (result != null)
+                    return result;
             }
             return null;
         }

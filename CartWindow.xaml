@@ -80,6 +80,7 @@
                 </ScrollViewer>
             </Border>
 
+            
             <!-- Podsumowanie -->
             <Border Grid.Column="2"
                     Background="White"

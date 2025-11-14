@@ -16,9 +16,12 @@ using System.Windows.Shapes;
 
 namespace Projekt_zespołowy
 {
+
     public partial class LoginWindow : Window
     {
         private string connectionString = "Data Source=bazaAPH.db;Version=3;";
+        public string UserRole { get; private set; }
+        public string Username { get; private set; }
 
         public LoginWindow()
         {
@@ -55,7 +58,12 @@ namespace Projekt_zespołowy
 
                                 if (VerifyPassword(password, storedHash))
                                 {
-                                    MessageBox.Show($"Zalogowano jako {username} ({role})", "Sukces", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    this.UserRole = role;      // 👈 zapisz rolę użytkownika
+                                    this.Username = username;  // 👈 zapisz login
+
+                                    MessageBox.Show($"Zalogowano jako {username} ({role})",
+                                        "Sukces", MessageBoxButton.OK, MessageBoxImage.Information);
+
                                     this.DialogResult = true;
                                     return;
                                 }

@@ -20,6 +20,7 @@ namespace Projekt_zespołowy
     public partial class MainWindow : Window
     {
         private bool IsLoggedIn = false; // tymczasowo, żeby kontrolować stan logowania
+        private string LoggedUserRole = "";
         private int _cartCount = 0; // licznik koszyka
 
         public MainWindow()
@@ -46,8 +47,11 @@ namespace Projekt_zespołowy
                 BtnRegister.Visibility = Visibility.Collapsed;
                 BtnLogout.Visibility = Visibility.Visible;
 
-                // Tymczasowo ukrywamy panel admina
-                BtnAdmin.Visibility = Visibility.Collapsed;
+                // pokaż admina tylko jeśli rola = admin
+                if (LoggedUserRole == "admin")
+                    BtnAdmin.Visibility = Visibility.Visible;
+                else
+                    BtnAdmin.Visibility = Visibility.Collapsed;
             }
             else
             {
@@ -67,11 +71,18 @@ namespace Projekt_zespołowy
 
             if (result == true)
             {
-                // Po udanym logowaniu
                 IsLoggedIn = true;
+
+                // pobranie roli z LoginWindow
+                LoggedUserRole = loginWindow.UserRole;
+
                 UpdateAuthButtons();
 
-                MessageBox.Show($"Zalogowano użytkownika: {loginWindow.txtUsername.Text}",
+                // jeśli admin → pokaż przycisk panelu admina
+                if (LoggedUserRole == "admin")
+                    BtnAdmin.Visibility = Visibility.Visible;
+
+                MessageBox.Show($"Zalogowano użytkownika: {loginWindow.Username}",
                                 "Logowanie", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }

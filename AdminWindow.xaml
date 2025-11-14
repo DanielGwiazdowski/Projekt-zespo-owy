@@ -1,0 +1,147 @@
+﻿<Window x:Class="Projekt_zespołowy.AdminWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Panel Administratora"
+        Height="650" Width="900"
+        Background="#F4F4F4">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
+
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="20">
+
+                <!-- Tytuł -->
+                <TextBlock Text="Panel Administratora" 
+                           FontSize="24" 
+                           FontWeight="Bold" 
+                           Margin="0,0,0,20"/>
+
+                <!-- Sekcja dodawania nowego elementu -->
+                <Border Background="White" CornerRadius="5" Padding="15" Margin="0,0,0,20">
+                    <StackPanel>
+
+                        <TextBlock Text="Dodawanie nowego elementu" 
+                                   FontSize="18" 
+                                   FontWeight="SemiBold" 
+                                   Margin="0,0,0,15"/>
+
+                        <!-- Nazwa elementu -->
+                        <TextBlock Text="Nazwa elementu:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="NazwaElementu" Height="30"
+                                 VerticalContentAlignment="Center"
+                                 Padding="5,0,0,0"
+                                 Margin="0,0,0,15"/>
+
+                        <!-- Opis -->
+                        <TextBlock Text="Opis elementu:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="OpisElementu" 
+                                 Height="100" 
+                                 TextWrapping="Wrap"
+                                 Padding="5,5,0,0"
+                                 Margin="0,0,0,15"/>
+                        <TextBlock Text="Producent:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="ProducentElementu" Height="30" 
+         VerticalContentAlignment="Center" 
+         Padding="5,0,0,0" 
+         Margin="0,0,0,15"/>
+                        <TextBlock Text="Cena netto:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="CenaElementu" Height="30" VerticalContentAlignment="Center" Padding="5,0,0,0" Margin="0,0,0,15"/>
+
+                        <!-- Zdjęcie -->
+                        <TextBlock Text="Zdjęcie elementu:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <Button Content="Wybierz plik ze zdjęciem"
+                                Click="WybierzZdjecie_Click"
+                                Height="30"
+                                Background="#3498DB"
+                                Foreground="White"
+                                HorizontalAlignment="Left"
+                                Padding="10,0"
+                                Margin="0,0,0,10"/>
+
+                        <!-- Podgląd -->
+                        <TextBlock Text="Podgląd zdjęcia:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <Border BorderBrush="#CCCCCC" BorderThickness="1" 
+                                Width="200" Height="150" HorizontalAlignment="Left"
+                                Margin="0,0,0,15">
+                            <Image x:Name="PodgladZdjecia" Stretch="Uniform"/>
+                        </Border>
+
+                        <!-- Kategoria -->
+                        <TextBlock Text="Kategoria elementu:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <ComboBox x:Name="KategoriaElementu" 
+                                  Height="30"
+                                  VerticalContentAlignment="Center"
+                                  Padding="5,0,0,0"
+                                  Margin="0,0,0,20"/>
+
+                        <!-- Dodawanie -->
+                        <Button Content="Dodaj element do katalogu"
+                                Click="DodajElement_Click"
+                                Background="#28A745"
+                                Foreground="White"
+                                Height="40"
+                                HorizontalAlignment="Left"
+                                Padding="15,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Lista elementów -->
+                <Border Background="White" CornerRadius="5" Padding="15">
+                    <StackPanel>
+
+                        <TextBlock Text="Lista elementów w katalogu"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,15"/>
+
+                        <ListView x:Name="ListaElementow" 
+                                  Height="250" 
+                                  BorderThickness="1"
+                                  BorderBrush="#CCCCCC">
+
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Width="600">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Image Source="{Binding Zdjecie}"
+                                               Width="50" Height="50"
+                                               Margin="0,0,10,0"/>
+
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="{Binding Nazwa}" FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding Kategoria}" Foreground="Gray" FontSize="12"/>
+                                            <TextBlock Text="{Binding Opis}" 
+                                                       TextTrimming="CharacterEllipsis"
+                                                       Foreground="#555" FontSize="12"/>
+                                        </StackPanel>
+
+                                        <Button Content="Usuń"
+                                                Click="UsunElement_Click"
+                                                Tag="{Binding Id}"
+                                                Background="#DC3545"
+                                                Foreground="White"
+                                                Padding="10,5"
+                                                Margin="10,0,0,0"
+                                                Grid.Column="2"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+
+                        </ListView>
+
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+
+</Window>

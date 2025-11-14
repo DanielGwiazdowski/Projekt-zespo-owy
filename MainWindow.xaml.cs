@@ -112,6 +112,8 @@ namespace Projekt_zespołowy
             // Wylogowanie użytkownika
             IsLoggedIn = false;
             UpdateAuthButtons();
+            LoggedUserRole = "";
+            BtnAdmin.Visibility = Visibility.Collapsed;
 
             // Wyczyść zawartość głównego frame
             MainFrame.Navigate(null);
@@ -125,6 +127,15 @@ namespace Projekt_zespołowy
             Window window = (Window)((FrameworkElement)sender).TemplatedParent ??
                             (Window)((FrameworkElement)sender).Parent;
             window?.Close();
+        }
+        private void BtnAdmin_Click(object sender, RoutedEventArgs e)
+        {
+            AdminWindow adminWindow = new AdminWindow();
+            adminWindow.Owner = this;   // opcjonalnie
+            adminWindow.ShowDialog();   // blokujące okno modalne
+
+            // jeżeli wolisz nieblokujące okno:
+            // adminWindow.Show();
         }
 
         // ================================

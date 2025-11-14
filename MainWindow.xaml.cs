@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.SQLite;
 using System.Linq;
 using System.Text;
@@ -29,6 +30,8 @@ namespace Projekt_zespołowy
         {
             InitializeComponent();
 
+            CartPage.SharedStore.PropertyChanged += SharedStore_PropertyChanged;
+
             UpdateCartBadge();
             UpdateAuthButtons();
 
@@ -47,6 +50,16 @@ namespace Projekt_zespołowy
 
             Console.WriteLine($"[DEBUG] Załadowano {_allProducts.Count} produktów z bazy.");
         }
+
+        private void SharedStore_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CartPage.CartStore.ItemsCount))
+            {
+                _cartCount = CartPage.SharedStore.ItemsCount;
+                UpdateCartBadge();
+            }
+        }
+
 
         private void UpdateAuthButtons()
         {

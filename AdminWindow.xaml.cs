@@ -15,6 +15,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static Projekt_zespołowy.MainWindow;
+
 
 #nullable enable
 using IOPath = System.IO.Path;
@@ -188,14 +190,4 @@ namespace Projekt_zespołowy
         }
     }
 
-    public class Produkt
-    {
-        public int Id { get; set; }
-        public string Nazwa { get; set; } = "";
-        public string Opis { get; set; } = "";
-        public string Producent { get; set; } = "";
-        public string Kategoria { get; set; } = "";
-        public decimal Cena { get; set; }
-        public string Zdjecie { get; set; } = "";
-    }
 }

@@ -147,6 +147,8 @@ namespace Projekt_zespołowy
             public string Producent { get; set; } = "";
             public decimal Cena { get; set; }
             public string Zdjecie { get; set; } = "";
+
+            public int ilość { get; set; } = 10; // Domyślna ilość na stanie
         }
 
         private List<Produkt> PobierzProdukty()
@@ -273,6 +275,18 @@ namespace Projekt_zespołowy
                 };
                 panel.Children.Add(cena);
 
+                // 🔹 ILOŚĆ SZTUK
+                var quantity = new TextBlock
+                {
+                    Text = $"Dostępne: {p.ilość} szt.",
+                    Margin = new Thickness(5, 0, 5, 5),
+                    FontWeight = FontWeights.SemiBold,
+                    Foreground = Brushes.DarkBlue,
+                    TextAlignment = TextAlignment.Center
+                };
+                panel.Children.Add(quantity);
+
+
                 // ==========================================================
                 // =============== DODANY PRZYCISK „DODAJ DO KOSZYKA” =======
                 // ==========================================================
@@ -289,7 +303,20 @@ namespace Projekt_zespołowy
 
                 btnAdd.Click += (s, e) =>
                 {
+
+                    if (p.ilość <= 0)
+                    {
+                        MessageBox.Show("Brak towaru na stanie!");
+                        return;
+                    }
+
+                    p.ilość--;   // 🔻 Zmniejszamy ilość
+
                     AddToCart(p);
+
+                    // 🔄 Odświeżamy widok produktów
+                    WyswietlProdukty(_currentFilteredProducts);
+
                     MessageBox.Show($"Dodano do koszyka: {p.Nazwa}");
                 };
 

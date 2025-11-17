@@ -304,3 +304,7 @@ C:\Users\pawel\Documents\GitHub\Projekt-zespo-owy\bin\Debug\net8.0-windows\runti
 C:\Users\pawel\Documents\GitHub\Projekt-zespo-owy\bin\Debug\net8.0-windows\runtimes\win-x86\native\e_sqlite3.dll
 C:\Users\pawel\Documents\GitHub\Projekt-zespo-owy\obj\Debug\net8.0-windows\AdminWindow.baml
 C:\Users\pawel\Documents\GitHub\Projekt-zespo-owy\obj\Debug\net8.0-windows\AdminWindow.g.cs
+C:\Users\pawel\Documents\GitHub\Projekt-zespo-owy\bin\Debug\net8.0-windows\ControlzEx.dll
+C:\Users\pawel\Documents\GitHub\Projekt-zespo-owy\bin\Debug\net8.0-windows\MahApps.Metro.dll
+C:\Users\pawel\Documents\GitHub\Projekt-zespo-owy\bin\Debug\net8.0-windows\Microsoft.Xaml.Behaviors.dll
+C:\Users\pawel\Documents\GitHub\Projekt-zespo-owy\bin\Debug\net8.0-windows\de\MahApps.Metro.resources.dll

@@ -310,7 +310,7 @@ namespace Projekt_zespołowy
                         return;
                     }
 
-                    p.ilość--;   // 🔻 Zmniejszamy ilość
+                    // p.ilość--; przykładowo zmniejszamy ilość na stanie 
 
                     AddToCart(p);
 
@@ -579,8 +579,9 @@ namespace Projekt_zespołowy
             if (_currentFilteredProducts == null)
                 _currentFilteredProducts = new List<Produkt>(_allProducts);
 
-            int min = (int)(_priceMinSlider?.Value ?? PRICE_MIN);
-            int max = (int)(_priceMaxSlider?.Value ?? PRICE_MAX);
+            int min = (int)PriceRange.LowerValue;
+            int max = (int)PriceRange.UpperValue;
+
 
             var brands = new List<string>();
             if (_brandLuk.IsChecked == true) brands.Add("LUK");
@@ -606,11 +607,6 @@ namespace Projekt_zespołowy
 
         private void ClearFilters_Click(object sender, RoutedEventArgs e)
         {
-            SliderMin.Value = 1500;
-            SliderMax.Value = 2000;
-
-            LabelMin.Text = "1500 PLN";
-            LabelMax.Text = "2000 PLN";
 
             CheckLUK.IsChecked = false;
             CheckSachs.IsChecked = false;

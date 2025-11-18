@@ -89,7 +89,7 @@
                 </Border>
 
                 <!-- Lista elementów -->
-                <Border Background="White" CornerRadius="5" Padding="15">
+                <Border Background="White" CornerRadius="5" Padding="15" Margin="0,0,0,20">
                     <StackPanel>
 
                         <TextBlock Text="Lista elementów w katalogu"
@@ -137,6 +137,27 @@
 
                         </ListView>
 
+                    </StackPanel>
+                </Border>
+
+                <!-- Przycisk zarządzania użytkownikami -->
+                <Border Background="White" CornerRadius="5" Padding="15">
+                    <StackPanel>
+                        <TextBlock Text="Zarządzanie użytkownikami" 
+                                   FontSize="18" 
+                                   FontWeight="SemiBold" 
+                                   Margin="0,0,0,15"/>
+
+                        <Button Content="📋 Otwórz listę użytkowników"
+                                Click="OtworzListeUzytkownikow_Click"
+                                Background="#2980B9"
+                                Foreground="White"
+                                Height="50"
+                                FontSize="15"
+                                FontWeight="SemiBold"
+                                HorizontalAlignment="Left"
+                                Padding="25,0"
+                                Cursor="Hand"/>
                     </StackPanel>
                 </Border>
 

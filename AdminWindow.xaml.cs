@@ -17,7 +17,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using static Projekt_zespołowy.MainWindow;
 
-
 #nullable enable
 using IOPath = System.IO.Path;
 
@@ -71,6 +70,13 @@ namespace Projekt_zespołowy
                     Zdjecie = reader["zdjecie"]?.ToString() ?? ""
                 });
             }
+        }
+
+        // HANDLER DO OTWIERANIA OKNA Z UŻYTKOWNIKAMI
+        private void OtworzListeUzytkownikow_Click(object sender, RoutedEventArgs e)
+        {
+            UserListWindow userWindow = new UserListWindow();
+            userWindow.Show();
         }
 
         private void WybierzZdjecie_Click(object sender, RoutedEventArgs e)
@@ -189,5 +195,4 @@ namespace Projekt_zespołowy
             produkty.Remove(produkt);
         }
     }
-
 }

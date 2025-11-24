@@ -84,58 +84,67 @@
         </Border>
 
         <!-- Pasek kategorii -->
-        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-            <WrapPanel HorizontalAlignment="Center" Margin="5">
-                <Button Width="150" Margin="5" Background="#0078D7" Foreground="White" FontWeight="Bold">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="⚡" FontSize="16" Margin="0,0,5,0"/>
-                        <TextBlock Text="Układ Elektryczny"/>
-                    </StackPanel>
-                </Button>
+		<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+			<WrapPanel HorizontalAlignment="Center" Margin="5">
 
-                <Button Width="150" Margin="5" Background="#0078D7" Foreground="White" FontWeight="Bold">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="🛑" FontSize="16" Margin="0,0,5,0"/>
-                        <TextBlock Text="Układ Hamulcowy"/>
-                    </StackPanel>
-                </Button>
+				<Button Width="150" Margin="5" Background="#0078D7" Foreground="White"
+						FontWeight="Bold" Click="Elektryczny_Click">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="⚡" FontSize="16" Margin="0,0,5,0"/>
+						<TextBlock Text="Układ Elektryczny"/>
+					</StackPanel>
+				</Button>
 
-                <Button Width="150" Margin="5" Background="#0078D7" Foreground="White" FontWeight="Bold">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="⚙️" FontSize="16" Margin="0,0,5,0"/>
-                        <TextBlock Text="Układ Napędowy"/>
-                    </StackPanel>
-                </Button>
+				<Button Width="150" Margin="5" Background="#0078D7" Foreground="White"
+						FontWeight="Bold" Click="Hamulcowy_Click">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="🛑" FontSize="16" Margin="0,0,5,0"/>
+						<TextBlock Text="Układ Hamulcowy"/>
+					</StackPanel>
+				</Button>
 
-                <Button Width="150" Margin="5" Background="#0078D7" Foreground="White" FontWeight="Bold">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="💧" FontSize="16" Margin="0,0,5,0"/>
-                        <TextBlock Text="Oleje"/>
-                    </StackPanel>
-                </Button>
+				<Button Width="150" Margin="5" Background="#0078D7" Foreground="White"
+						FontWeight="Bold" Click="Napedowy_Click">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="⚙️" FontSize="16" Margin="0,0,5,0"/>
+						<TextBlock Text="Układ Napędowy"/>
+					</StackPanel>
+				</Button>
 
-                <Button Width="150" Margin="5" Background="#0078D7" Foreground="White" FontWeight="Bold">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="🔍" FontSize="16" Margin="0,0,5,0"/>
-                        <TextBlock Text="Filtry"/>
-                    </StackPanel>
-                </Button>
+				<Button Width="150" Margin="5" Background="#0078D7" Foreground="White"
+						FontWeight="Bold" Click="Oleje_Click">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="💧" FontSize="16" Margin="0,0,5,0"/>
+						<TextBlock Text="Oleje"/>
+					</StackPanel>
+				</Button>
 
-                <Button Width="150" Margin="5" Background="#0078D7" Foreground="White" FontWeight="Bold">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="🔄" FontSize="16" Margin="0,0,5,0"/>
-                        <TextBlock Text="Sprzęgła"/>
-                    </StackPanel>
-                </Button>
+				<Button Width="150" Margin="5" Background="#0078D7" Foreground="White"
+						FontWeight="Bold" Click="Filtry_Click">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="🔍" FontSize="16" Margin="0,0,5,0"/>
+						<TextBlock Text="Filtry"/>
+					</StackPanel>
+				</Button>
 
-                <Button Width="150" Margin="5" Background="#0078D7" Foreground="White" FontWeight="Bold">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="💿" FontSize="16" Margin="0,0,5,0"/>
-                        <TextBlock Text="Koła Dwumasowe"/>
-                    </StackPanel>
-                </Button>
-            </WrapPanel>
-        </ScrollViewer>
+				<Button Width="150" Margin="5" Background="#0078D7" Foreground="White"
+						FontWeight="Bold" Click="Sprzegla_Click">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="🔄" FontSize="16" Margin="0,0,5,0"/>
+						<TextBlock Text="Sprzęgła"/>
+					</StackPanel>
+				</Button>
+
+				<Button Width="150" Margin="5" Background="#0078D7" Foreground="White"
+						FontWeight="Bold" Click="KolaDwumasowe_Click">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="💿" FontSize="16" Margin="0,0,5,0"/>
+						<TextBlock Text="Koła Dwumasowe"/>
+					</StackPanel>
+				</Button>
+
+			</WrapPanel>
+		</ScrollViewer>
 
         <!-- 🔽 KOSZYK POD PASKIEM KATEGORII, PO PRAWEJ -->
         <Grid Grid.Row="2">

@@ -639,5 +639,39 @@ namespace Projekt_zespołowy
             }
             return null;
         }
+        private void Oleje_Click(object sender, RoutedEventArgs e)
+        {
+            FilterByCategory("oleje");
+        }
+
+        private void Filtry_Click(object sender, RoutedEventArgs e)
+        {
+            FilterByCategory("filtry");
+        }
+
+        private void Sprzegla_Click(object sender, RoutedEventArgs e)
+        {
+            FilterByCategory("sprzegla");
+        }
+
+        private void KolaDwumasowe_Click(object sender, RoutedEventArgs e)
+        {
+            FilterByCategory("kola dwumasowe");
+        }
+
+        private void Elektryczny_Click(object sender, RoutedEventArgs e)
+        {
+            FilterByCategory("elektryka");
+        }
+
+        private void Hamulcowy_Click(object sender, RoutedEventArgs e)
+        {
+            FilterByCategory("hamulce");
+        }
+
+        private void Napedowy_Click(object sender, RoutedEventArgs e)
+        {
+            FilterByCategory("naped");
+        }
     }
 }

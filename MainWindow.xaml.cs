@@ -639,6 +639,29 @@ namespace Projekt_zespołowy
             }
             return null;
         }
+        public void FilterByCategory(string? category)
+        {
+            Console.WriteLine($"[KATEGORIA] Oczekiwana: {category}");
+
+            foreach (var p in _allProducts)
+                Console.WriteLine($"Produkt: {p.Nazwa} | Kategoria w bazie: '{p.Kategoria}'");
+
+            if (string.IsNullOrWhiteSpace(category))
+            {
+                _currentFilteredProducts = new List<Produkt>(_allProducts);
+            }
+            else
+            {
+                _currentFilteredProducts = _allProducts
+                    .Where(p => !string.IsNullOrEmpty(p.Kategoria) &&
+                                p.Kategoria.Equals(category, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            Console.WriteLine($"[WYNIK FILTRU] znaleziono: {_currentFilteredProducts.Count}");
+
+            WyswietlProdukty(_currentFilteredProducts);
+        }
         private void Oleje_Click(object sender, RoutedEventArgs e)
         {
             FilterByCategory("oleje");

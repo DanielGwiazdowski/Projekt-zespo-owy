@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\pawel\\Documents\\GitHub\\Projekt-zespo-owy\\Projekt zespołowy.csproj": {}
+    "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj": {}
   },
   "projects": {
-    "C:\\Users\\pawel\\Documents\\GitHub\\Projekt-zespo-owy\\Projekt zespołowy.csproj": {
+    "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\pawel\\Documents\\GitHub\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+        "projectUniqueName": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
         "projectName": "Projekt zespołowy",
-        "projectPath": "C:\\Users\\pawel\\Documents\\GitHub\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
-        "packagesPath": "C:\\Users\\pawel\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\pawel\\Documents\\GitHub\\Projekt-zespo-owy\\obj\\",
+        "projectPath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+        "packagesPath": "C:\\Users\\osume\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\pawel\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\osume\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -50,6 +50,10 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "dependencies": {
+            "ControlzEx": {
+              "target": "Package",
+              "version": "[7.0.2, )"
+            },
             "MahApps.Metro": {
               "target": "Package",
               "version": "[2.4.11, )"
@@ -90,7 +94,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.307/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

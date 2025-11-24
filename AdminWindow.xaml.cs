@@ -33,13 +33,13 @@ namespace Projekt_zespołowy
             InitializeComponent();
 
             // Kategorie przykładowe
-            KategoriaElementu.Items.Add("Układ Elektryczny");
-            KategoriaElementu.Items.Add("Układ Hamulcowy");
-            KategoriaElementu.Items.Add("Układ Napędowy");
-            KategoriaElementu.Items.Add("Oleje");
-            KategoriaElementu.Items.Add("Filtry");
-            KategoriaElementu.Items.Add("Sprzęgła");
-            KategoriaElementu.Items.Add("Koła Dwumasowe");
+            KategoriaElementu.Items.Add("uklad_elektryczny");
+            KategoriaElementu.Items.Add("uklad_hamulcowy");
+            KategoriaElementu.Items.Add("uklad_napedowy");
+            KategoriaElementu.Items.Add("oleje");
+            KategoriaElementu.Items.Add("filtry");
+            KategoriaElementu.Items.Add("sprzegla");
+            KategoriaElementu.Items.Add("kola_dwumasowe");
 
             ListaElementow.ItemsSource = produkty;
 

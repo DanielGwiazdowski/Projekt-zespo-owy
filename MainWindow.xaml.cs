@@ -564,45 +564,61 @@ namespace Projekt_zespołowy
             }
             else
             {
+                string normalized = Normalize(category);
+
                 _currentFilteredProducts = _allProducts
-                    .Where(p => !string.IsNullOrEmpty(p.Kategoria) &&
-                                p.Kategoria.Equals(category, StringComparison.OrdinalIgnoreCase))
+                    .Where(p => Normalize(p.Kategoria) == normalized)
                     .ToList();
             }
 
-            Console.WriteLine($"[DEBUG] FilterByCategory('{category}') => {_currentFilteredProducts.Count} produktów");
             WyswietlProdukty(_currentFilteredProducts);
+        }
+
+        private string Normalize(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return "";
+
+            return text
+                .Trim()
+                .ToLower()
+                .Replace(" ", "_")
+                .Replace("-", "_")
+                .Replace("ł", "l")
+                .Replace("ą", "a")
+                .Replace("ę", "e")
+                .Replace("ś", "s")
+                .Replace("ć", "c")
+                .Replace("ń", "n")
+                .Replace("ó", "o")
+                .Replace("ż", "z")
+                .Replace("ź", "z");
         }
 
         private void ApplyFilters_Click(object sender, RoutedEventArgs e)
         {
-            if (_currentFilteredProducts == null)
-                _currentFilteredProducts = new List<Produkt>(_allProducts);
-
             int min = (int)PriceRange.LowerValue;
             int max = (int)PriceRange.UpperValue;
-
 
             var brands = new List<string>();
             if (_brandLuk.IsChecked == true) brands.Add("LUK");
             if (_brandSachs.IsChecked == true) brands.Add("Sachs");
             if (_brandValeo.IsChecked == true) brands.Add("Valeo");
 
-            var filtered = _currentFilteredProducts.Where(p => p.Cena >= min && p.Cena <= max);
+            // 🔥 ZACZYNAMY ZAWSZE OD _allProducts (NIGDY od _currentFilteredProducts)
+            var filtered = _allProducts.Where(p => p.Cena >= min && p.Cena <= max);
 
             if (brands.Count > 0)
             {
-                filtered = filtered.Where(p => !string.IsNullOrEmpty(p.Producent) &&
-                                               brands.Any(b =>
-                                                   string.Equals(b, p.Producent, StringComparison.OrdinalIgnoreCase)));
+                filtered = filtered.Where(p =>
+                    !string.IsNullOrEmpty(p.Producent) &&
+                    brands.Any(b => b.Equals(p.Producent, StringComparison.OrdinalIgnoreCase)));
             }
 
+            // ZAPISUJEMY WYNIK
             _currentFilteredProducts = filtered.ToList();
 
-            Console.WriteLine($"[DEBUG] ApplyFilters => {_currentFilteredProducts.Count}");
             WyswietlProdukty(_currentFilteredProducts);
-
-            MessageBox.Show($"Zastosowano filtry. Wynik: {_currentFilteredProducts.Count} produktów.");
         }
 
         private void ClearFilters_Click(object sender, RoutedEventArgs e)
@@ -616,10 +632,6 @@ namespace Projekt_zespołowy
             WyswietlProdukty(_currentFilteredProducts);
         }
 
-        private void BtnOleje_Click(object sender, RoutedEventArgs e)
-        {
-            FilterByCategory("oleje");
-        }
 
         private static T? FindDescendant<T>(DependencyObject root) where T : DependencyObject
         {
@@ -639,29 +651,7 @@ namespace Projekt_zespołowy
             }
             return null;
         }
-        public void FilterByCategory(string? category)
-        {
-            Console.WriteLine($"[KATEGORIA] Oczekiwana: {category}");
-
-            foreach (var p in _allProducts)
-                Console.WriteLine($"Produkt: {p.Nazwa} | Kategoria w bazie: '{p.Kategoria}'");
-
-            if (string.IsNullOrWhiteSpace(category))
-            {
-                _currentFilteredProducts = new List<Produkt>(_allProducts);
-            }
-            else
-            {
-                _currentFilteredProducts = _allProducts
-                    .Where(p => !string.IsNullOrEmpty(p.Kategoria) &&
-                                p.Kategoria.Equals(category, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-            }
-
-            Console.WriteLine($"[WYNIK FILTRU] znaleziono: {_currentFilteredProducts.Count}");
-
-            WyswietlProdukty(_currentFilteredProducts);
-        }
+        
         private void Oleje_Click(object sender, RoutedEventArgs e)
         {
             FilterByCategory("oleje");
@@ -679,22 +669,22 @@ namespace Projekt_zespołowy
 
         private void KolaDwumasowe_Click(object sender, RoutedEventArgs e)
         {
-            FilterByCategory("kola dwumasowe");
+            FilterByCategory("kola_dwumasowe");
         }
 
         private void Elektryczny_Click(object sender, RoutedEventArgs e)
         {
-            FilterByCategory("elektryka");
+            FilterByCategory("uklad_elektryczny");
         }
 
         private void Hamulcowy_Click(object sender, RoutedEventArgs e)
         {
-            FilterByCategory("hamulce");
+            FilterByCategory("uklad_hamulcowy");
         }
 
         private void Napedowy_Click(object sender, RoutedEventArgs e)
         {
-            FilterByCategory("naped");
+            FilterByCategory("uklad_napedowy");
         }
     }
 }

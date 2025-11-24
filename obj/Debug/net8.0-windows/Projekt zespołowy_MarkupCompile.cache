@@ -4,15 +4,15 @@
 winexe
 C#
 .cs
-C:\Users\osume\source\repos\DanielGwiazdowski\Projekt-zespo-owy\obj\Release\net8.0-windows\
+C:\Users\osume\source\repos\DanielGwiazdowski\Projekt-zespo-owy\obj\Debug\net8.0-windows\
 Projekt_zespołowy
 none
 false
-TRACE;RELEASE;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
+TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
 C:\Users\osume\source\repos\DanielGwiazdowski\Projekt-zespo-owy\App.xaml
 71543702584
 
-11-1293193330
+111984339697
 2081529655164
 AdminWindow.xaml;CartWindow.xaml;images\LoginWindow.xaml;LoginWindow.xaml;MainWindow.xaml;RegisterWindow.xaml;UserListWindow.xaml;
 

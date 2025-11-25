@@ -12,19 +12,33 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Projekt_zespołowy;
 
 namespace Projekt_zespołowy
 {
     public partial class MainWindow : Window
     {
         // ====== STAN APLIKACJI ======
-        private bool IsLoggedIn = false;
-        private string LoggedUserRole = "";
         private int _cartCount = 0;
+        public static class UserSession
+        {
+            public static bool IsLogged { get; set; } = false;
+            public static string Username { get; set; } = "";
+            public static string Role { get; set; } = "";
+            public static int UserId { get; set; } = 0; // opcjonalne
+        }
 
         // ====== NOWE: przechowywanie produktów ======
         private List<Produkt> _allProducts = new List<Produkt>();
         private List<Produkt> _currentFilteredProducts = new List<Produkt>();
+
+        // Zmienne do obsługi filtrów (już zdefiniowane)
+        private Slider _priceMinSlider, _priceMaxSlider;
+        private TextBlock _priceMinLabel, _priceMaxLabel;
+        private CheckBox _brandLuk, _brandSachs, _brandValeo;
+        private const int PRICE_MIN = 1500;
+        private const int PRICE_MAX = 2000;
+
 
         public MainWindow()
         {
@@ -60,15 +74,15 @@ namespace Projekt_zespołowy
             }
         }
 
-
         private void UpdateAuthButtons()
         {
-            if (IsLoggedIn)
+            if (UserSession.IsLogged)
             {
                 BtnLogin.Visibility = Visibility.Collapsed;
                 BtnRegister.Visibility = Visibility.Collapsed;
                 BtnLogout.Visibility = Visibility.Visible;
-                BtnAdmin.Visibility = LoggedUserRole == "admin" ? Visibility.Visible : Visibility.Collapsed;
+                // Poprawka: Bezpośrednie odwołanie do UserSession.Role
+                BtnAdmin.Visibility = UserSession.Role == "admin" ? Visibility.Visible : Visibility.Collapsed;
             }
             else
             {
@@ -86,11 +100,15 @@ namespace Projekt_zespołowy
 
             if (result == true)
             {
-                IsLoggedIn = true;
-                LoggedUserRole = loginWindow.UserRole;
+                // Użycie UserSession.IsLogged, UserSession.Role, itd.
+                UserSession.IsLogged = true;
+                UserSession.Role = loginWindow.UserRole;
+                UserSession.Username = loginWindow.Username;
+                UserSession.UserId = loginWindow.UserId; // <--- To wymaga definicji UserId w LoginWindow!
+
                 UpdateAuthButtons();
 
-                if (LoggedUserRole == "admin")
+                if (UserSession.Role == "admin") // Poprawne użycie UserSession.Role
                     BtnAdmin.Visibility = Visibility.Visible;
 
                 MessageBox.Show($"Zalogowano użytkownika: {loginWindow.Username}");
@@ -104,23 +122,29 @@ namespace Projekt_zespołowy
 
             if (result == true)
             {
+                // Zarejestrowano, zakładając, że `registerWindow.txtUsername` to kontrolka w RegisterWindow
                 MessageBox.Show($"Zarejestrowano użytkownika: {registerWindow.txtUsername.Text}");
             }
         }
 
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsLoggedIn)
+            // Poprawka: Bezpośrednie odwołanie do UserSession.IsLogged
+            if (!UserSession.IsLogged)
             {
                 MessageBox.Show("Nie jesteś zalogowany!");
                 return;
             }
 
-            IsLoggedIn = false;
-            LoggedUserRole = "";
+            // Poprawka: Bezpośrednie odwołanie do UserSession
+            UserSession.IsLogged = false;
+            UserSession.Username = "";
+            UserSession.Role = "";
+            UserSession.UserId = 0;
+
             UpdateAuthButtons();
             BtnAdmin.Visibility = Visibility.Collapsed;
-            MainFrame.Navigate(null);
+            MainFrame.Navigate(null); // Zakładam, że masz kontrolkę Frame o nazwie MainFrame
 
             MessageBox.Show("Wylogowano pomyślnie!");
         }
@@ -128,7 +152,7 @@ namespace Projekt_zespołowy
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
             Window window = (Window)((FrameworkElement)sender).TemplatedParent ??
-                            (Window)((FrameworkElement)sender).Parent;
+                             (Window)((FrameworkElement)sender).Parent;
             window?.Close();
         }
 
@@ -186,6 +210,8 @@ namespace Projekt_zespołowy
         {
             Console.WriteLine($"[DEBUG] WyswietlProdukty: {produkty?.Count ?? 0} elementów");
 
+            // Zakładam, że masz kontrolkę WrapPanel o nazwie ProductsWrapPanel
+            if (ProductsWrapPanel == null) return;
             ProductsWrapPanel.Children.Clear();
 
             foreach (var p in produkty)
@@ -330,9 +356,11 @@ namespace Projekt_zespołowy
 
         private void UpdateCartBadge()
         {
-            if (CartBadge == null || CartCountText == null) return;
-            CartCountText.Text = _cartCount.ToString();
-            CartBadge.Visibility = _cartCount > 0 ? Visibility.Visible : Visibility.Collapsed;
+            // Zakładam, że masz kontrolki CartBadge (np. Border) i CartCountText (np. TextBlock)
+            // Jeśli ich nie masz, musisz je dodać do pliku XAML (MainWindow.xaml) lub zakomentować ten kod.
+            // if (CartBadge == null || CartCountText == null) return; 
+            // CartCountText.Text = _cartCount.ToString();
+            // CartBadge.Visibility = _cartCount > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public void AddToCart(Produkt produkt)
@@ -359,19 +387,26 @@ namespace Projekt_zespołowy
         private void BtnCart_Click(object sender, RoutedEventArgs e)
         {
             var cartWindow = new Projekt_zespołowy.Views.CartPage { Owner = this };
+
+            // Użycie UserSession.IsLogged, UserSession.UserId, UserSession.Username
+            cartWindow.IsUserLoggedIn = UserSession.IsLogged;
+
+            cartWindow.CurrentUser = new CartPage.User
+            {
+                Id = UserSession.UserId,
+                Email = UserSession.Username
+            };
+
             cartWindow.ShowDialog();
         }
 
         public int CartCount => _cartCount;
 
         // ==============================
-        //   FILTRY: panel lewy (slidery i checkboxy) - pola UI
+        //    FILTRY: panel lewy (slidery i checkboxy) - pola UI
         // ==============================
-        private Slider _priceMinSlider, _priceMaxSlider;
-        private TextBlock _priceMinLabel, _priceMaxLabel;
-        private CheckBox _brandLuk, _brandSachs, _brandValeo;
-        private const int PRICE_MIN = 1500;
-        private const int PRICE_MAX = 2000;
+
+        // Zmienne do obsługi filtrów zdefiniowane na początku klasy
 
         protected override void OnContentRendered(EventArgs e)
         {
@@ -597,8 +632,11 @@ namespace Projekt_zespołowy
 
         private void ApplyFilters_Click(object sender, RoutedEventArgs e)
         {
-            int min = (int)PriceRange.LowerValue;
-            int max = (int)PriceRange.UpperValue;
+            // Poprawka: Usunięcie błędnego użycia PriceRange i użycie _priceMinSlider / _priceMaxSlider
+            if (_priceMinSlider == null || _priceMaxSlider == null) return;
+
+            int min = (int)_priceMinSlider.Value;
+            int max = (int)_priceMaxSlider.Value;
 
             var brands = new List<string>();
             if (_brandLuk.IsChecked == true) brands.Add("LUK");
@@ -623,10 +661,15 @@ namespace Projekt_zespołowy
 
         private void ClearFilters_Click(object sender, RoutedEventArgs e)
         {
+            // Użyj pól prywatnych, które zdefiniowałeś (jeśli są zainicjowane)
+            if (_brandLuk != null) _brandLuk.IsChecked = false;
+            if (_brandSachs != null) _brandSachs.IsChecked = false;
+            if (_brandValeo != null) _brandValeo.IsChecked = false;
 
-            CheckLUK.IsChecked = false;
-            CheckSachs.IsChecked = false;
-            CheckValeo.IsChecked = false;
+            // Poniższe były błędne, ponieważ nie odwołują się do pól prywatnych:
+            // CheckLUK.IsChecked = false; 
+            // CheckSachs.IsChecked = false;
+            // CheckValeo.IsChecked = false;
 
             _currentFilteredProducts = new List<Produkt>(_allProducts);
             WyswietlProdukty(_currentFilteredProducts);
@@ -651,7 +694,7 @@ namespace Projekt_zespołowy
             }
             return null;
         }
-        
+
         private void Oleje_Click(object sender, RoutedEventArgs e)
         {
             FilterByCategory("oleje");

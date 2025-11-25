@@ -7,131 +7,207 @@
         WindowStartupLocation="CenterOwner"
         Background="#F5F5F5">
 
-    <Grid Margin="16">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+	<Grid Margin="16">
 
-        <!-- Nagłówek -->
-        <TextBlock Text="🛒 Twój koszyk"
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+
+		<!-- Nagłówek -->
+		<TextBlock Text="🛒 Twój koszyk"
                    FontSize="28"
                    FontWeight="Bold"
                    Foreground="#222"
                    HorizontalAlignment="Center"
                    Margin="0,0,0,10"/>
 
-        <!-- Zawartość -->
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="20"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+		<!-- Zawartość -->
+		<Grid Grid.Row="1">
 
-            <!-- Lista produktów -->
-            <Border Grid.Column="0"
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="2*"/>
+				<ColumnDefinition Width="20"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+
+			<!-- Lista produktów -->
+			<Border Grid.Column="0"
                     Background="White"
                     Padding="10"
                     CornerRadius="10"
                     BorderBrush="#DDD"
                     BorderThickness="1">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding Items}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,6">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<ItemsControl ItemsSource="{Binding Items}">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<Grid Margin="0,6">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto"/>
+										<ColumnDefinition Width="*"/>
+										<ColumnDefinition Width="Auto"/>
+										<ColumnDefinition Width="Auto"/>
+										<ColumnDefinition Width="Auto"/>
+									</Grid.ColumnDefinitions>
 
-                                    <Image Source="{Binding ImagePath}" Width="60" Height="60" Margin="0,0,10,0"/>
+									<Image Source="{Binding ImagePath}" Width="60" Height="60" Margin="0,0,10,0"/>
 
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
-                                        <TextBlock Text="{Binding Sku}" Foreground="Gray" FontSize="12"/>
-                                        <TextBlock Text="{Binding UnitPrice, StringFormat=Cena: {0:C}}" FontSize="12"/>
-                                    </StackPanel>
+									<StackPanel Grid.Column="1" VerticalAlignment="Center">
+										<TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+										<TextBlock Text="{Binding Sku}" Foreground="Gray" FontSize="12"/>
+										<TextBlock Text="{Binding UnitPrice, StringFormat=Cena: {0:C}}" FontSize="12"/>
+									</StackPanel>
 
-                                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0">
-                                        <Button Content="–" Width="28" Height="28" Click="Decrease_Click"/>
-                                        <TextBlock Text="{Binding Quantity}" Width="30" TextAlignment="Center" VerticalAlignment="Center" Margin="6,0"/>
-                                        <Button Content="+" Width="28" Height="28" Click="Increase_Click"/>
-                                    </StackPanel>
+									<StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0">
+										<Button Content="–" Width="28" Height="28" Click="Decrease_Click"/>
+										<TextBlock Text="{Binding Quantity}" Width="30" TextAlignment="Center" VerticalAlignment="Center" Margin="6,0"/>
+										<Button Content="+" Width="28" Height="28" Click="Increase_Click"/>
+									</StackPanel>
 
-                                    <TextBlock Grid.Column="3" Text="{Binding LineTotal, StringFormat={}{0:C}}"
-                                               FontWeight="Bold" VerticalAlignment="Center" Margin="16,0" />
+									<TextBlock Grid.Column="3"
+                                               Text="{Binding LineTotal, StringFormat={}{0:C}}"
+                                               FontWeight="Bold"
+                                               VerticalAlignment="Center"
+                                               Margin="16,0" />
 
-                                    <Button Grid.Column="4"
+									<Button Grid.Column="4"
                                             Content="Usuń"
                                             Background="#DC3545"
                                             Foreground="White"
                                             Padding="10,4"
                                             Margin="10,0"
                                             Click="Remove_Click"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </Border>
+								</Grid>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</ScrollViewer>
+			</Border>
 
-            
-            <!-- Podsumowanie -->
-            <Border Grid.Column="2"
-                    Background="White"
-                    Padding="16"
-                    CornerRadius="10"
-                    BorderBrush="#DDD"
-                    BorderThickness="1">
-                <StackPanel>
-                    <TextBlock Text="Podsumowanie"
-                               FontSize="20"
-                               FontWeight="Bold"
-                               Margin="0,0,0,12"/>
+			<!-- PRAWA KOLUMNA: Podsumowanie + Formularz -->
+			<Grid Grid.Column="2">
 
-                    <StackPanel Orientation="Horizontal" Margin="0,4">
-                        <TextBlock Text="Liczba sztuk:"/>
-                        <TextBlock Text="{Binding ItemsCount}" FontWeight="SemiBold" Margin="8,0,0,0"/>
-                    </StackPanel>
+				<!-- PODSUMOWANIE -->
+				<Border x:Name="SummaryPanel"
+                        Background="White"
+                        Padding="16"
+                        CornerRadius="10"
+                        BorderBrush="#DDD"
+                        BorderThickness="1"
+                        Visibility="Visible">
 
-                    <StackPanel Orientation="Horizontal" Margin="0,4">
-                        <TextBlock Text="Suma netto:"/>
-                        <TextBlock Text="{Binding Subtotal, StringFormat={}{0:C}}" FontWeight="SemiBold" Margin="8,0,0,0"/>
-                    </StackPanel>
+					<StackPanel>
 
-                    <StackPanel Orientation="Horizontal" Margin="0,4">
-                        <TextBlock Text="VAT (23%):"/>
-                        <TextBlock Text="{Binding Vat, StringFormat={}{0:C}}" FontWeight="SemiBold" Margin="8,0,0,0"/>
-                    </StackPanel>
+						<TextBlock Text="Podsumowanie"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,12"/>
 
-                    <Separator Margin="0,8"/>
+						<StackPanel Orientation="Horizontal" Margin="0,4">
+							<TextBlock Text="Liczba sztuk:"/>
+							<TextBlock Text="{Binding ItemsCount}" FontWeight="SemiBold" Margin="8,0,0,0"/>
+						</StackPanel>
 
-                    <StackPanel Orientation="Horizontal" Margin="0,4">
-                        <TextBlock Text="Do zapłaty:" FontSize="16" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Total, StringFormat={}{0:C}}" FontSize="16" FontWeight="Bold" Margin="8,0,0,0"/>
-                    </StackPanel>
+						<StackPanel Orientation="Horizontal" Margin="0,4">
+							<TextBlock Text="Suma netto:"/>
+							<TextBlock Text="{Binding Subtotal, StringFormat={}{0:C}}" FontWeight="SemiBold" Margin="8,0,0,0"/>
+						</StackPanel>
 
-                    <Button Content="Przejdź do zamówienia"
-                            Background="#28A745"
-                            Foreground="White"
-                            Height="38"
-                            Margin="0,12,0,0"
-                            Click="Checkout_Click"/>
+						<StackPanel Orientation="Horizontal" Margin="0,4">
+							<TextBlock Text="VAT (23%):"/>
+							<TextBlock Text="{Binding Vat, StringFormat={}{0:C}}" FontWeight="SemiBold" Margin="8,0,0,0"/>
+						</StackPanel>
 
-                    <Button Content="Wyczyść koszyk"
-                            Background="#DC3545"
-                            Foreground="White"
-                            Height="32"
-                            Margin="0,8,0,0"
-                            Click="Clear_Click"/>
-                </StackPanel>
-            </Border>
-        </Grid>
-    </Grid>
+						<Separator Margin="0,8"/>
+
+						<StackPanel Orientation="Horizontal" Margin="0,4">
+							<TextBlock Text="Do zapłaty:" FontSize="16" FontWeight="Bold"/>
+							<TextBlock Text="{Binding Total, StringFormat={}{0:C}}" FontSize="16" FontWeight="Bold" Margin="8,0,0,0"/>
+						</StackPanel>
+
+						<Button Content="Przejdź do zamówienia"
+                                Background="#28A745"
+                                Foreground="White"
+                                Height="38"
+                                Margin="0,12,0,0"
+                                Click="Checkout_Click"/>
+
+						<Button Content="Wyczyść koszyk"
+                                Background="#DC3545"
+                                Foreground="White"
+                                Height="32"
+                                Margin="0,8,0,0"
+                                Click="Clear_Click"/>
+					</StackPanel>
+				</Border>
+
+
+				<!-- FORMULARZ ZAMÓWIENIA -->
+				<Border x:Name="OrderFormPanel"
+        Background="White"
+        Padding="16"
+        CornerRadius="10"
+        BorderBrush="#DDD"
+        BorderThickness="1"
+        Visibility="Collapsed">
+
+    <StackPanel>
+
+        <TextBlock Text="Dane zamówienia"
+                   FontSize="20"
+                   FontWeight="Bold"
+                   Margin="0,0,0,12"/>
+
+        <!-- Imię i nazwisko -->
+        <TextBlock Text="Imię" Foreground="Gray"/>
+        <TextBox x:Name="InputName" Margin="0,2"/>
+
+		<TextBlock Text="Nazwisko" Foreground="Gray"/>
+		<TextBox x:Name="InputName2" Margin="0,2"/>
+
+        <!-- Ulica -->
+        <TextBlock Text="Ulica" Foreground="Gray" Margin="0,8,0,0"/>
+        <TextBox x:Name="InputStreet" Margin="0,2"/>
+
+        <!-- Numer budynku -->
+        <TextBlock Text="Numer budynku" Foreground="Gray" Margin="0,8,0,0"/>
+        <TextBox x:Name="InputBuildingNumber" Margin="0,2"/>
+
+        <!-- Miejscowość -->
+        <TextBlock Text="Miejscowość" Foreground="Gray" Margin="0,8,0,0"/>
+        <TextBox x:Name="InputCity" Margin="0,2"/>
+
+        <!-- Kod pocztowy -->
+        <TextBlock Text="Kod pocztowy" Foreground="Gray" Margin="0,8,0,0"/>
+        <TextBox x:Name="InputZip" Margin="0,2"/>
+
+        <!-- Numer telefonu -->
+        <TextBlock Text="Numer telefonu" Foreground="Gray" Margin="0,8,0,0"/>
+        <TextBox x:Name="InputPhone" Margin="0,2"/>
+
+		<TextBlock Text="Uwagi do zamówienia" Foreground="Gray" Margin="0,8,0,0"/>
+		<TextBox x:Name="InputUwagi" Margin="0,2"/>
+
+        <Button Content="Złóż zamówienie"
+                Background="#007BFF"
+                Foreground="White"
+                Height="38"
+                Margin="0,16,0,0"
+                Click="PlaceOrder_Click"/>
+
+        <Button Content="Powrót"
+                Background="#6C757D"
+                Foreground="White"
+                Height="32"
+                Margin="0,8,0,0"
+                Click="BackToCart_Click"/>
+
+    </StackPanel>
+</Border>
+
+			</Grid>
+
+		</Grid>
+	</Grid>
 </Window>
-

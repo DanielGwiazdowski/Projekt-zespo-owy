@@ -13,15 +13,18 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Projekt_zespołowy;
 
 namespace Projekt_zespołowy
 {
-
     public partial class LoginWindow : Window
     {
         private string connectionString = "Data Source=bazaAPH.db;Version=3;";
-        public string UserRole { get; private set; }
-        public string Username { get; private set; }
+
+        // Publiczne właściwości do przekazania danych do MainWindow
+        public string UserRole { get; set; } = "";
+        public string Username { get; set; } = "";
+        public int UserId { get; set; } = 0;
 
         public LoginWindow()
         {
@@ -45,7 +48,8 @@ namespace Projekt_zespołowy
                 {
                     conn.Open();
 
-                    string query = "SELECT haslo_hash, rola FROM uzytkownicy WHERE login = @login";
+                    // ZAPYTANIE POPRAWIONE: Używamy 'id_uzytkownik' zgodnie z Twoją strukturą tabeli
+                    string query = "SELECT id_uzytkownik, haslo_hash, rola FROM uzytkownicy WHERE login = @login";
                     using (var cmd = new SQLiteCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@login", username);
@@ -53,13 +57,17 @@ namespace Projekt_zespołowy
                         {
                             if (reader.Read())
                             {
+                                // ODCZYT POPRAWIONY: Używamy 'id_uzytkownik'
+                                int id = Convert.ToInt32(reader["id_uzytkownik"]);
                                 string storedHash = reader["haslo_hash"].ToString();
                                 string role = reader["rola"].ToString();
 
                                 if (VerifyPassword(password, storedHash))
                                 {
-                                    this.UserRole = role;      // 👈 zapisz rolę użytkownika
-                                    this.Username = username;  // 👈 zapisz login
+                                    // Ustawiamy właściwości LoginWindow do przekazania do MainWindow
+                                    this.UserRole = role;
+                                    this.Username = username;
+                                    this.UserId = id;
 
                                     MessageBox.Show($"Zalogowano jako {username} ({role})",
                                         "Sukces", MessageBoxButton.OK, MessageBoxImage.Information);

@@ -5,6 +5,10 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Data.SQLite;
+using MigraDocCore.DocumentObjectModel;
+using MigraDocCore.Rendering;
+using System.IO;
+using System.Diagnostics;
 
 namespace Projekt_zespołowy.Views
 {
@@ -208,7 +212,7 @@ namespace Projekt_zespołowy.Views
                 return;
             }
 
-            // 3. Sprawdzenie czy koszyk nie jest pusty (dodatkowe zabezpieczenie)
+            // 3. Sprawdzenie czy koszyk nie jest pusty
             if (Store.ItemsCount == 0)
             {
                 MessageBox.Show("Nie można złożyć pustego zamówienia.", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -221,18 +225,45 @@ namespace Projekt_zespołowy.Views
                 {
                     con.Open();
 
-                    // 1. Sprawdzenie/utworzenie klienta powiązanego z użytkownikiem
+                    // --- TU POWSTAJE orderId ---
                     int klientId = EnsureClientExists(con, CurrentUser.Id);
-
-                    // 2. Utworzenie zamówienia
                     int orderId = CreateOrder(con, klientId);
-
-                    // 3. Wstawienie pozycji zamówienia
                     InsertOrderItems(con, orderId);
 
+                    // komunikat
                     MessageBox.Show("Zamówienie złożone pomyślnie!");
 
-                    // 4. Reset
+                    // ====== PODSUMOWANIE (WARIANT 1 – MESSAGEBOX) ======
+                    string summary =
+                        $"Zamówienie nr {orderId}\n\n" +
+                        $"Klient: {InputName.Text}\n" +
+                        $"Adres: {InputStreet.Text} {InputBuildingNumber.Text}, {InputZip.Text} {InputCity.Text}\n\n" +
+                        $"Pozycje:\n";
+
+                    foreach (var item in Store.Items)
+                    {
+                        summary += $"{item.Name} x {item.Quantity} = {item.LineTotal:F2} zł\n";
+                    }
+
+                    summary += $"\nSuma netto: {Store.Subtotal:F2} zł" +
+                               $"\nVAT 23%: {Store.Vat:F2} zł" +
+                               $"\nRazem brutto: {Store.Total:F2} zł";
+
+                    MessageBox.Show(summary, "Podsumowanie zamówienia",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // ====== GENEROWANIE PDF ======
+                    string pdfPath = GenerateInvoicePDF(orderId);
+
+                    var psi = new System.Diagnostics.ProcessStartInfo()
+                    {
+                        FileName = pdfPath,
+                        UseShellExecute = true
+                    };
+
+                    System.Diagnostics.Process.Start(psi);
+
+                    // ====== RESET KOSZYKA ======
                     Store.Clear();
                     OrderFormPanel.Visibility = Visibility.Collapsed;
                     SummaryPanel.Visibility = Visibility.Visible;
@@ -244,6 +275,7 @@ namespace Projekt_zespołowy.Views
                                 "Błąd bazy danych", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
         private int EnsureClientExists(SQLiteConnection con, int userId)
         {
             // Sprawdzenie czy user ma już klienta
@@ -349,6 +381,75 @@ namespace Projekt_zespołowy.Views
                     throw new Exception("Błąd podczas wstawiania pozycji zamówienia.", ex);
                 }
             }
+        }
+
+        private string GenerateInvoicePDF(int orderId)
+        {
+            Document doc = new Document();
+            doc.Info.Title = "Faktura VAT";
+
+            Section section = doc.AddSection();
+            section.PageSetup.PageFormat = PageFormat.A4;
+
+            // Nagłówek
+            section.AddParagraph("FAKTURA VAT", "Heading1").Format.Alignment = ParagraphAlignment.Center;
+
+            section.AddParagraph($"Numer zamówienia: {orderId}");
+            section.AddParagraph($"Data: {DateTime.Now:yyyy-MM-dd}");
+            section.AddParagraph("\n");
+
+            // Dane klienta
+            var customer = section.AddParagraph("Dane klienta:", "Heading2");
+            section.AddParagraph($"{InputName.Text}");
+            section.AddParagraph($"{InputStreet.Text} {InputBuildingNumber.Text}");
+            section.AddParagraph($"{InputZip.Text} {InputCity.Text}");
+            section.AddParagraph($"\nTelefon: {InputPhone.Text}");
+            section.AddParagraph("\n");
+
+            // Tabela z pozycjami
+            var table = section.AddTable();
+            table.Borders.Width = 0.75;
+
+            table.AddColumn("6cm");
+            table.AddColumn("2cm");
+            table.AddColumn("3cm");
+            table.AddColumn("3cm");
+
+            var header = table.AddRow();
+            header.Shading.Color = Colors.LightGray;
+            header.Cells[0].AddParagraph("Produkt");
+            header.Cells[1].AddParagraph("Ilość");
+            header.Cells[2].AddParagraph("Cena netto");
+            header.Cells[3].AddParagraph("Wartość netto");
+
+            foreach (var item in Store.Items)
+            {
+                var row = table.AddRow();
+                row.Cells[0].AddParagraph(item.Name);
+                row.Cells[1].AddParagraph(item.Quantity.ToString());
+                row.Cells[2].AddParagraph(item.UnitPrice.ToString("F2") + " zł");
+                row.Cells[3].AddParagraph(item.LineTotal.ToString("F2") + " zł");
+            }
+
+            section.AddParagraph("\n");
+
+            // Podsumowanie
+            var summary = section.AddParagraph();
+            summary.AddFormattedText($"Suma netto: {Store.Subtotal:F2} zł\n");
+            summary.AddFormattedText($"VAT 23%: {Store.Vat:F2} zł\n");
+            summary.AddFormattedText($"Razem brutto: {Store.Total:F2} zł", TextFormat.Bold);
+
+            // Render PDF
+            PdfDocumentRenderer renderer = new PdfDocumentRenderer(true);
+            renderer.Document = doc;
+            renderer.RenderDocument();
+
+            string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                                           $"Faktura_{orderId}.pdf");
+
+            renderer.PdfDocument.Save(filePath);
+
+            return filePath;
         }
     }
 }

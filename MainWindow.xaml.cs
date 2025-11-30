@@ -370,7 +370,8 @@ namespace Projekt_zespołowy
                 name: produkt.Nazwa,
                 unitPrice: produkt.Cena,
                 quantity: 1,
-                imagePath: produkt.Zdjecie
+                imagePath: produkt.Zdjecie,
+                productId: produkt.Id  
             );
 
             _cartCount = CartPage.SharedStore.ItemsCount;

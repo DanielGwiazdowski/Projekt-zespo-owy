@@ -1,18 +1,15 @@
 ﻿using Projekt_zespołowy.Views;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SQLite;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Projekt_zespołowy;
+using MahApps.Metro.Controls;
 
 namespace Projekt_zespołowy
 {
@@ -25,20 +22,15 @@ namespace Projekt_zespołowy
             public static bool IsLogged { get; set; } = false;
             public static string Username { get; set; } = "";
             public static string Role { get; set; } = "";
-            public static int UserId { get; set; } = 0; // opcjonalne
+            public static int UserId { get; set; } = 0;
         }
 
-        // ====== NOWE: przechowywanie produktów ======
+        // ====== NOWE: przechowywanie produktów i kategorii ======
         private List<Produkt> _allProducts = new List<Produkt>();
         private List<Produkt> _currentFilteredProducts = new List<Produkt>();
 
-        // Zmienne do obsługi filtrów (już zdefiniowane)
-        private Slider _priceMinSlider, _priceMaxSlider;
-        private TextBlock _priceMinLabel, _priceMaxLabel;
-        private CheckBox _brandLuk, _brandSachs, _brandValeo;
-        private const int PRICE_MIN = 1500;
-        private const int PRICE_MAX = 2000;
-
+        // ⭐️ DODANE POLE DO PRZECHOWYWANIA AKTYWNEJ KATEGORII
+        private string _currentCategory = null;
 
         public MainWindow()
         {
@@ -81,7 +73,6 @@ namespace Projekt_zespołowy
                 BtnLogin.Visibility = Visibility.Collapsed;
                 BtnRegister.Visibility = Visibility.Collapsed;
                 BtnLogout.Visibility = Visibility.Visible;
-                // Poprawka: Bezpośrednie odwołanie do UserSession.Role
                 BtnAdmin.Visibility = UserSession.Role == "admin" ? Visibility.Visible : Visibility.Collapsed;
             }
             else
@@ -100,15 +91,14 @@ namespace Projekt_zespołowy
 
             if (result == true)
             {
-                // Użycie UserSession.IsLogged, UserSession.Role, itd.
                 UserSession.IsLogged = true;
                 UserSession.Role = loginWindow.UserRole;
                 UserSession.Username = loginWindow.Username;
-                UserSession.UserId = loginWindow.UserId; // <--- To wymaga definicji UserId w LoginWindow!
+                UserSession.UserId = loginWindow.UserId;
 
                 UpdateAuthButtons();
 
-                if (UserSession.Role == "admin") // Poprawne użycie UserSession.Role
+                if (UserSession.Role == "admin")
                     BtnAdmin.Visibility = Visibility.Visible;
 
                 MessageBox.Show($"Zalogowano użytkownika: {loginWindow.Username}");
@@ -122,21 +112,18 @@ namespace Projekt_zespołowy
 
             if (result == true)
             {
-                // Zarejestrowano, zakładając, że `registerWindow.txtUsername` to kontrolka w RegisterWindow
-                MessageBox.Show($"Zarejestrowano użytkownika: {registerWindow.txtUsername.Text}");
+                MessageBox.Show($"Zarejestrowano użytkownika!");
             }
         }
 
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
-            // Poprawka: Bezpośrednie odwołanie do UserSession.IsLogged
             if (!UserSession.IsLogged)
             {
                 MessageBox.Show("Nie jesteś zalogowany!");
                 return;
             }
 
-            // Poprawka: Bezpośrednie odwołanie do UserSession
             UserSession.IsLogged = false;
             UserSession.Username = "";
             UserSession.Role = "";
@@ -144,7 +131,7 @@ namespace Projekt_zespołowy
 
             UpdateAuthButtons();
             BtnAdmin.Visibility = Visibility.Collapsed;
-            MainFrame.Navigate(null); // Zakładam, że masz kontrolkę Frame o nazwie MainFrame
+            MainFrame.Navigate(null);
 
             MessageBox.Show("Wylogowano pomyślnie!");
         }
@@ -172,7 +159,7 @@ namespace Projekt_zespołowy
             public decimal Cena { get; set; }
             public string Zdjecie { get; set; } = "";
 
-            public int ilość { get; set; } = 10; // Domyślna ilość na stanie
+            public int ilość { get; set; } = 10;
         }
 
         private List<Produkt> PobierzProdukty()
@@ -210,7 +197,6 @@ namespace Projekt_zespołowy
         {
             Console.WriteLine($"[DEBUG] WyswietlProdukty: {produkty?.Count ?? 0} elementów");
 
-            // Zakładam, że masz kontrolkę WrapPanel o nazwie ProductsWrapPanel
             if (ProductsWrapPanel == null) return;
             ProductsWrapPanel.Children.Clear();
 
@@ -230,24 +216,31 @@ namespace Projekt_zespołowy
                 var panel = new StackPanel { Orientation = Orientation.Vertical };
                 border.Child = panel;
 
-                if (!string.IsNullOrEmpty(p.Zdjecie))
-                {
-                    try
-                    {
-                        string fullPath;
-                        if (p.Zdjecie.StartsWith("/"))
-                        {
-                            fullPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, p.Zdjecie.TrimStart('/', '\\'));
-                        }
-                        else if (System.IO.Path.IsPathRooted(p.Zdjecie))
-                        {
-                            fullPath = p.Zdjecie;
-                        }
-                        else
-                        {
-                            fullPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "images", p.Zdjecie);
-                        }
+                // Logika wyświetlania zdjęć... (pominięta dla zwięzłości)
+                // ...
 
+                var img = new Image
+                {
+                    Height = 100,
+                    Stretch = Stretch.Uniform
+                };
+
+                try
+                {
+                    // 1. CZYSZCZENIE ŚCIEŻKI:
+                    string imageRelativePath = p.Zdjecie
+                        .TrimStart('/')
+                        .Replace('\\', '/');
+
+                    if (!string.IsNullOrEmpty(imageRelativePath))
+                    {
+                        // 2. BUDOWANIE PEŁNEJ ŚCIEŻKI:
+                        string fullPath = System.IO.Path.Combine(
+                            AppDomain.CurrentDomain.BaseDirectory,
+                            imageRelativePath
+                        );
+
+                        // 3. WERYFIKACJA I ŁADOWANIE:
                         if (System.IO.File.Exists(fullPath))
                         {
                             var bitmap = new BitmapImage();
@@ -255,33 +248,50 @@ namespace Projekt_zespołowy
                             bitmap.UriSource = new Uri(fullPath, UriKind.Absolute);
                             bitmap.CacheOption = BitmapCacheOption.OnLoad;
                             bitmap.EndInit();
+                            img.Source = bitmap;
 
-                            var img = new Image
-                            {
-                                Source = bitmap,
-                                Height = 100,
-                                Stretch = Stretch.Uniform
-                            };
+                            // ⭐️ DODANIE TYLKO RAZ PO PRAWIDŁOWYM ZAŁADOWANIU
                             panel.Children.Add(img);
                         }
                         else
                         {
+                            // Komunikat, gdy plik nie istnieje (dodajemy TextBlock, nie img)
                             panel.Children.Add(new TextBlock
                             {
-                                Text = "[brak zdjęcia]",
-                                TextAlignment = TextAlignment.Center
+                                Text = $"[PLIK NIEZALEZIONY W: {fullPath}]",
+                                FontSize = 8,
+                                TextWrapping = TextWrapping.Wrap,
+                                TextAlignment = TextAlignment.Center,
+                                Height = 100
                             });
                         }
                     }
-                    catch
+                    else
                     {
+                        // Fallback, gdy ścieżka w bazie jest pusta
                         panel.Children.Add(new TextBlock
                         {
-                            Text = "[błąd zdjęcia]",
-                            TextAlignment = TextAlignment.Center
+                            Text = "[brak ścieżki zdjęcia]",
+                            TextAlignment = TextAlignment.Center,
+                            Height = 100
                         });
                     }
                 }
+                catch (Exception ex)
+                {
+                    // Obsługa innych błędów ładowania
+                    Console.WriteLine($"[BŁĄD KRYTYCZNY ŁADOWANIA ZDJĘCIA] Produkt: {p.Nazwa}. Błąd: {ex.Message}");
+                    panel.Children.Add(new TextBlock
+                    {
+                        Text = "[błąd ładowania (catch)]",
+                        TextAlignment = TextAlignment.Center,
+                        Height = 100
+                    });
+                }
+                
+
+            SkipImage:;
+
 
                 var nazwa = new TextBlock
                 {
@@ -301,7 +311,6 @@ namespace Projekt_zespołowy
                 };
                 panel.Children.Add(cena);
 
-                // 🔹 ILOŚĆ SZTUK
                 var quantity = new TextBlock
                 {
                     Text = $"Dostępne: {p.ilość} szt.",
@@ -311,11 +320,6 @@ namespace Projekt_zespołowy
                     TextAlignment = TextAlignment.Center
                 };
                 panel.Children.Add(quantity);
-
-
-                // ==========================================================
-                // =============== DODANY PRZYCISK „DODAJ DO KOSZYKA” =======
-                // ==========================================================
 
                 var btnAdd = new Button
                 {
@@ -329,26 +333,18 @@ namespace Projekt_zespołowy
 
                 btnAdd.Click += (s, e) =>
                 {
-
                     if (p.ilość <= 0)
                     {
                         MessageBox.Show("Brak towaru na stanie!");
                         return;
                     }
 
-                    // p.ilość--; przykładowo zmniejszamy ilość na stanie 
-
                     AddToCart(p);
-
-                    // 🔄 Odświeżamy widok produktów
                     WyswietlProdukty(_currentFilteredProducts);
-
                     MessageBox.Show($"Dodano do koszyka: {p.Nazwa}");
                 };
 
                 panel.Children.Add(btnAdd);
-
-                // ==========================================================
 
                 ProductsWrapPanel.Children.Add(border);
             }
@@ -356,11 +352,9 @@ namespace Projekt_zespołowy
 
         private void UpdateCartBadge()
         {
-            // Zakładam, że masz kontrolki CartBadge (np. Border) i CartCountText (np. TextBlock)
-            // Jeśli ich nie masz, musisz je dodać do pliku XAML (MainWindow.xaml) lub zakomentować ten kod.
-            // if (CartBadge == null || CartCountText == null) return; 
-            // CartCountText.Text = _cartCount.ToString();
-            // CartBadge.Visibility = _cartCount > 0 ? Visibility.Visible : Visibility.Collapsed;
+            if (CartBadge == null || CartCountText == null) return;
+            CartCountText.Text = _cartCount.ToString();
+            CartBadge.Visibility = _cartCount > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public void AddToCart(Produkt produkt)
@@ -371,7 +365,7 @@ namespace Projekt_zespołowy
                 unitPrice: produkt.Cena,
                 quantity: 1,
                 imagePath: produkt.Zdjecie,
-                productId: produkt.Id  
+                productId: produkt.Id
             );
 
             _cartCount = CartPage.SharedStore.ItemsCount;
@@ -389,7 +383,6 @@ namespace Projekt_zespołowy
         {
             var cartWindow = new Projekt_zespołowy.Views.CartPage { Owner = this };
 
-            // Użycie UserSession.IsLogged, UserSession.UserId, UserSession.Username
             cartWindow.IsUserLoggedIn = UserSession.IsLogged;
 
             cartWindow.CurrentUser = new CartPage.User
@@ -403,211 +396,50 @@ namespace Projekt_zespołowy
 
         public int CartCount => _cartCount;
 
-        // ==============================
-        //    FILTRY: panel lewy (slidery i checkboxy) - pola UI
-        // ==============================
-
-        // Zmienne do obsługi filtrów zdefiniowane na początku klasy
-
-        protected override void OnContentRendered(EventArgs e)
+        // ⭐️ NOWA OBSŁUGA ZMIANY WARTOŚCI RANGE SLIDERA Z XAML
+        private void PriceRange_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            base.OnContentRendered(e);
-            try
-            {
-                InjectFiltersPanel();
-            }
-            catch
-            {
-                Dispatcher.InvokeAsync(() =>
-                {
-                    try { InjectFiltersPanel(); } catch { }
-                });
-            }
+            // RangeSlider z MahApps.Metro ma właściwości LowerValue i UpperValue, 
+            // które zawierają aktualnie wybrane wartości.
+
+            // 1. Aktualizacja etykiet wyświetlających zakres cen
+            LabelMin.Text = $"{PriceRange.LowerValue:F0} PLN";
+            LabelMax.Text = $"{PriceRange.UpperValue:F0} PLN";
+
+            // 2. Opcjonalnie: automatyczne zastosowanie filtrów po zmianie suwaka. 
+            // Zalecam, aby to WYKOMENTOWAĆ, jeśli chcesz, aby filtry były stosowane
+            // tylko po kliknięciu przycisku "Zastosuj".
+
+            // ApplyFilters_Click(null, null); 
         }
 
-        private void InjectFiltersPanel()
-        {
-            var mainScroll = FindDescendant<ScrollViewer>(this);
-            if (mainScroll == null) return;
-
-            if (mainScroll.Content is Grid g && g.Tag as string == "InjectedWithFilters")
-                return;
-
-            var originalContent = mainScroll.Content as FrameworkElement;
-            if (originalContent == null) return;
-
-            var host = new Grid { Margin = new Thickness(0) };
-            host.Tag = "InjectedWithFilters";
-            host.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(320) });
-            host.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-
-            var filtersBorder = BuildFiltersUi();
-            Grid.SetColumn(filtersBorder, 0);
-            host.Children.Add(filtersBorder);
-
-            originalContent.Margin = new Thickness(0, 0, 0, 0);
-            Grid.SetColumn(originalContent, 1);
-            host.Children.Add(originalContent);
-
-            mainScroll.Content = host;
-        }
-
-        private Border BuildFiltersUi()
-        {
-            var border = new Border
-            {
-                Background = Brushes.White,
-                BorderBrush = (Brush)new BrushConverter().ConvertFromString("#e6e6e6"),
-                BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(12),
-                Padding = new Thickness(16),
-                Margin = new Thickness(12, 0, 12, 0)
-            };
-
-            var stack = new StackPanel();
-            border.Child = stack;
-
-            stack.Children.Add(new TextBlock
-            {
-                Text = "Filtry",
-                FontSize = 28,
-                FontWeight = FontWeights.Bold,
-                Margin = new Thickness(0, 0, 0, 20)
-            });
-
-            stack.Children.Add(new TextBlock
-            {
-                Text = "Cena",
-                FontSize = 16,
-                FontWeight = FontWeights.SemiBold
-            });
-
-            var slidersGrid = new Grid { Margin = new Thickness(0, 12, 0, 4) };
-            slidersGrid.ColumnDefinitions.Add(new ColumnDefinition());
-            slidersGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(16) });
-            slidersGrid.ColumnDefinitions.Add(new ColumnDefinition());
-
-            _priceMinSlider = new Slider
-            {
-                Minimum = PRICE_MIN,
-                Maximum = PRICE_MAX,
-                Value = PRICE_MIN,
-                TickFrequency = 50,
-                IsSnapToTickEnabled = true
-            };
-            _priceMinSlider.ValueChanged += PriceSlider_ValueChanged;
-
-            _priceMaxSlider = new Slider
-            {
-                Minimum = PRICE_MIN,
-                Maximum = PRICE_MAX,
-                Value = PRICE_MAX,
-                TickFrequency = 50,
-                IsSnapToTickEnabled = true
-            };
-            _priceMaxSlider.ValueChanged += PriceSlider_ValueChanged;
-
-            Grid.SetColumn(_priceMinSlider, 0);
-            Grid.SetColumn(_priceMaxSlider, 2);
-            slidersGrid.Children.Add(_priceMinSlider);
-            slidersGrid.Children.Add(_priceMaxSlider);
-
-            stack.Children.Add(slidersGrid);
-
-            var labelsGrid = new Grid();
-            labelsGrid.ColumnDefinitions.Add(new ColumnDefinition());
-            labelsGrid.ColumnDefinitions.Add(new ColumnDefinition());
-
-            _priceMinLabel = new TextBlock
-            {
-                Text = $"{PRICE_MIN} PLN",
-                Foreground = new SolidColorBrush(Color.FromRgb(85, 85, 85)),
-                HorizontalAlignment = HorizontalAlignment.Left
-            };
-            _priceMaxLabel = new TextBlock
-            {
-                Text = $"{PRICE_MAX} PLN",
-                Foreground = new SolidColorBrush(Color.FromRgb(85, 85, 85)),
-                HorizontalAlignment = HorizontalAlignment.Right
-            };
-
-            Grid.SetColumn(_priceMinLabel, 0);
-            Grid.SetColumn(_priceMaxLabel, 1);
-            labelsGrid.Children.Add(_priceMinLabel);
-            labelsGrid.Children.Add(_priceMaxLabel);
-
-            stack.Children.Add(labelsGrid);
-            stack.Children.Add(new Separator { Margin = new Thickness(0, 16, 0, 12) });
-
-            stack.Children.Add(new TextBlock
-            {
-                Text = "Marka",
-                FontSize = 16,
-                FontWeight = FontWeights.SemiBold,
-                Margin = new Thickness(0, 0, 0, 8)
-            });
-
-            _brandLuk = new CheckBox { Content = "LUK", FontSize = 14, Margin = new Thickness(0, 6, 0, 0) };
-            _brandSachs = new CheckBox { Content = "Sachs", FontSize = 14, Margin = new Thickness(0, 6, 0, 0) };
-            _brandValeo = new CheckBox { Content = "Valeo", FontSize = 14, Margin = new Thickness(0, 6, 0, 0) };
-
-            stack.Children.Add(_brandLuk);
-            stack.Children.Add(_brandSachs);
-            stack.Children.Add(_brandValeo);
-
-            var apply = new Button
-            {
-                Content = "Zastosuj",
-                Margin = new Thickness(0, 20, 0, 0),
-                Padding = new Thickness(12, 8, 12, 8),
-                Background = (Brush)new BrushConverter().ConvertFromString("#1f6feb"),
-                Foreground = Brushes.White,
-                BorderBrush = (Brush)new BrushConverter().ConvertFromString("#1f6feb"),
-                FontWeight = FontWeights.SemiBold,
-                Cursor = Cursors.Hand
-            };
-            apply.Click += ApplyFilters_Click;
-
-            stack.Children.Add(apply);
-
-            return border;
-        }
-
-        private void PriceSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (_priceMinSlider == null || _priceMaxSlider == null) return;
-
-            if (_priceMinSlider.Value > _priceMaxSlider.Value)
-            {
-                if (sender == _priceMinSlider)
-                    _priceMaxSlider.Value = _priceMinSlider.Value;
-                else
-                    _priceMinSlider.Value = _priceMaxSlider.Value;
-            }
-
-            if (_priceMinLabel != null)
-                _priceMinLabel.Text = $"{(int)_priceMinSlider.Value} PLN";
-
-            if (_priceMaxLabel != null)
-                _priceMaxLabel.Text = $"{(int)_priceMaxSlider.Value} PLN";
-        }
-
+        // ⭐️ ZAKTUALIZOWANA GŁÓWNA METODA FILTRUJĄCA PO KATEGORII
         public void FilterByCategory(string? category)
         {
-            if (string.IsNullOrWhiteSpace(category))
-            {
-                _currentFilteredProducts = new List<Produkt>(_allProducts);
-            }
-            else
-            {
-                string normalized = Normalize(category);
+            // 1. Zapisz nową aktywną kategorię (null, jeśli pusta)
+            _currentCategory = string.IsNullOrWhiteSpace(category) ? null : Normalize(category);
 
-                _currentFilteredProducts = _allProducts
-                    .Where(p => Normalize(p.Kategoria) == normalized)
-                    .ToList();
-            }
+            // 2. Wyczyść filtry cen i marek
+            ClearFilterControls();
 
-            WyswietlProdukty(_currentFilteredProducts);
+            // 3. Zastosuj nową kategorię (lub wszystkie, jeśli null)
+            ApplyFilters_Click(null, null);
+        }
+
+        // ⭐️ NOWA METODA DO RESETOWANIA KONTROLEK FILTRÓW
+        private void ClearFilterControls()
+        {
+            // Reset RangeSlidera
+            PriceRange.LowerValue = PriceRange.Minimum;
+            PriceRange.UpperValue = PriceRange.Maximum;
+
+            // Reset Checkboxów
+            CheckLUK.IsChecked = false;
+            CheckBosch.IsChecked = false;
+            CheckATE.IsChecked = false;
+            CheckCastrol.IsChecked = false;
+            CheckSachs.IsChecked = false;
+            CheckValeo.IsChecked = false;
         }
 
         private string Normalize(string text)
@@ -631,104 +463,106 @@ namespace Projekt_zespołowy
                 .Replace("ź", "z");
         }
 
+        // ⭐️ ZAKTUALIZOWANA METODA: Obejmuje filtrowanie po KATEGORII
         private void ApplyFilters_Click(object sender, RoutedEventArgs e)
         {
-            // Poprawka: Usunięcie błędnego użycia PriceRange i użycie _priceMinSlider / _priceMaxSlider
-            if (_priceMinSlider == null || _priceMaxSlider == null) return;
+            IEnumerable<Produkt> filtered;
 
-            int min = (int)_priceMinSlider.Value;
-            int max = (int)_priceMaxSlider.Value;
-
-            var brands = new List<string>();
-            if (_brandLuk.IsChecked == true) brands.Add("LUK");
-            if (_brandSachs.IsChecked == true) brands.Add("Sachs");
-            if (_brandValeo.IsChecked == true) brands.Add("Valeo");
-
-            // 🔥 ZACZYNAMY ZAWSZE OD _allProducts (NIGDY od _currentFilteredProducts)
-            var filtered = _allProducts.Where(p => p.Cena >= min && p.Cena <= max);
-
-            if (brands.Count > 0)
+            // 1. FILTRUJ PO AKTYWNEJ KATEGORII (jeśli jest ustawiona)
+            if (_currentCategory != null)
             {
-                filtered = filtered.Where(p =>
-                    !string.IsNullOrEmpty(p.Producent) &&
-                    brands.Any(b => b.Equals(p.Producent, StringComparison.OrdinalIgnoreCase)));
+                filtered = _allProducts
+                    .Where(p => Normalize(p.Kategoria) == _currentCategory);
+            }
+            else
+            {
+                filtered = _allProducts;
             }
 
-            // ZAPISUJEMY WYNIK
-            _currentFilteredProducts = filtered.ToList();
+            // 2. Zbieranie filtrów cenowych
+            decimal minPrice = (decimal)PriceRange.LowerValue;
+            decimal maxPrice = (decimal)PriceRange.UpperValue;
 
+            // 3. Zbieranie filtrów marek (Producentów)
+            var selectedBrands = new List<string>();
+
+            if (CheckLUK.IsChecked == true) selectedBrands.Add("LUK");
+            if (CheckBosch.IsChecked == true) selectedBrands.Add("Bosch");
+            if (CheckATE.IsChecked == true) selectedBrands.Add("ATE");
+            if (CheckCastrol.IsChecked == true) selectedBrands.Add("Castrol");
+            if (CheckSachs.IsChecked == true) selectedBrands.Add("Sachs");
+            if (CheckValeo.IsChecked == true) selectedBrands.Add("Valeo");
+
+            // 4. FILTROWANIE PO CENIE I MARCE NA AKTUALNEJ LIŚCIE
+
+            // A. Filtrowanie po cenie (zawsze)
+            filtered = filtered.Where(p =>
+                p.Cena >= minPrice && p.Cena <= maxPrice
+            );
+
+            // B. Filtrowanie po marce (tylko jeśli wybrano)
+            if (selectedBrands.Any())
+            {
+                filtered = filtered.Where(p => selectedBrands.Contains(p.Producent));
+            }
+
+            // 5. Aktualizacja listy i wyświetlania
+            _currentFilteredProducts = filtered.ToList();
             WyswietlProdukty(_currentFilteredProducts);
+
+            if (sender != null)
+            {
+                MessageBox.Show($"Zastosowano filtry. Wyświetlono {_currentFilteredProducts.Count} produktów.");
+            }
         }
 
         private void ClearFilters_Click(object sender, RoutedEventArgs e)
         {
-            // Użyj pól prywatnych, które zdefiniowałeś (jeśli są zainicjowane)
-            if (_brandLuk != null) _brandLuk.IsChecked = false;
-            if (_brandSachs != null) _brandSachs.IsChecked = false;
-            if (_brandValeo != null) _brandValeo.IsChecked = false;
+            // Reset kontroli UI i usunięcie aktywnej kategorii
+            ClearFilterControls();
+            _currentCategory = null;
 
-            // Poniższe były błędne, ponieważ nie odwołują się do pól prywatnych:
-            // CheckLUK.IsChecked = false; 
-            // CheckSachs.IsChecked = false;
-            // CheckValeo.IsChecked = false;
-
+            // Wyświetlenie wszystkich produktów
             _currentFilteredProducts = new List<Produkt>(_allProducts);
             WyswietlProdukty(_currentFilteredProducts);
+            MessageBox.Show("Filtry zostały zresetowane. Wyświetlono wszystkie produkty.");
         }
 
 
-        private static T? FindDescendant<T>(DependencyObject root) where T : DependencyObject
-        {
-            if (root == null) return null;
-            int count = VisualTreeHelper.GetChildrenCount(root);
-
-            for (int i = 0; i < count; i++)
-            {
-                var child = VisualTreeHelper.GetChild(root, i);
-
-                if (child is T t)
-                    return t;
-
-                var result = FindDescendant<T>(child);
-                if (result != null)
-                    return result;
-            }
-            return null;
-        }
-
+        // Metody do kliknięć kategorii
         private void Oleje_Click(object sender, RoutedEventArgs e)
         {
-            FilterByCategory("oleje");
+            FilterByCategory("Oleje");
         }
 
         private void Filtry_Click(object sender, RoutedEventArgs e)
         {
-            FilterByCategory("filtry");
+            FilterByCategory("Filtry");
         }
 
         private void Sprzegla_Click(object sender, RoutedEventArgs e)
         {
-            FilterByCategory("sprzegla");
+            FilterByCategory("Sprzęgła");
         }
 
         private void KolaDwumasowe_Click(object sender, RoutedEventArgs e)
         {
-            FilterByCategory("kola_dwumasowe");
+            FilterByCategory("Koła Dwumasowe");
         }
 
         private void Elektryczny_Click(object sender, RoutedEventArgs e)
         {
-            FilterByCategory("uklad_elektryczny");
+            FilterByCategory("Układ Elektryczny");
         }
 
         private void Hamulcowy_Click(object sender, RoutedEventArgs e)
         {
-            FilterByCategory("uklad_hamulcowy");
+            FilterByCategory("Układ Hamulcowy");
         }
 
         private void Napedowy_Click(object sender, RoutedEventArgs e)
         {
-            FilterByCategory("uklad_napedowy");
+            FilterByCategory("Układ Napędowy");
         }
     }
 }

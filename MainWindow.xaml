@@ -201,33 +201,31 @@
                 <StackPanel>
                     <TextBlock Text="Filtry" FontSize="28" FontWeight="Bold" Margin="0 0 0 20"/>
 
-                    <!-- Sekcja ceny: NOWOCZESNY DESIGN -->
+                    <!-- Sekcja ceny -->
                     <TextBlock Text="Cena" FontSize="18" FontWeight="Bold" Margin="0 0 0 10"/>
 
                     <Border Background="#F7F9FC"
-                    CornerRadius="10"
-                    Padding="15"
-                    Margin="0 5 0 10"
-                    BorderBrush="#D0D7E2"
-                    BorderThickness="1"
-                    Effect="{DynamicResource ShadowEffect}">
+        CornerRadius="10"
+        Padding="15"
+        Margin="0 5 0 10"
+        BorderBrush="#D0D7E2"
+        BorderThickness="1"
+        Effect="{DynamicResource ShadowEffect}">
 
                         <StackPanel>
 
                             <!-- Slider -->
-							<mah:RangeSlider x:Name="PriceRange"
-                            Minimum="0"
-                            Maximum="2000"
-                            LowerValue="0"
-                            UpperValue="2000"
-                            TickFrequency="50"
-                            IsSnapToTickEnabled="True"
-                            Width="230"
-                            Height="38"
-                            ValueChanged="PriceRange_ValueChanged"
-                            HorizontalAlignment="Center"
-    
-                            />
+                            <mah:RangeSlider x:Name="PriceRange"
+                         Minimum="0"
+                         Maximum="2000"
+                         LowerValue="0"
+                         UpperValue="2000"
+                         TickFrequency="50"
+                         IsSnapToTickEnabled="True"
+                         Width="230"
+                         Height="38"
+                         RangeSelectionChanged="PriceRange_Changed"
+                         HorizontalAlignment="Center" />
 
                             <!-- Min / Max Labels -->
                             <Grid Width="230" Margin="0 8 0 0" HorizontalAlignment="Center">
@@ -254,7 +252,7 @@
                     </Border>
 
 
-                    
+
 
                     <Separator Margin="0 16 0 12"/>
 

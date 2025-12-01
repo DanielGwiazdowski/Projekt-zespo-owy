@@ -394,6 +394,15 @@ namespace Projekt_zespołowy
             cartWindow.ShowDialog();
         }
 
+        private void PriceRange_Changed(object sender, RoutedEventArgs e)
+        {
+            if (LabelMin == null || LabelMax == null)
+                return;
+
+            LabelMin.Text = $"{PriceRange.LowerValue:F0} PLN";
+            LabelMax.Text = $"{PriceRange.UpperValue:F0} PLN";
+        }
+
         public int CartCount => _cartCount;
 
         // ⭐️ NOWA OBSŁUGA ZMIANY WARTOŚCI RANGE SLIDERA Z XAML

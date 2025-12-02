@@ -15,7 +15,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
     <PackageReference Include="MigraDocCore.DocumentObjectModel" Version="1.3.67" />
     <PackageReference Include="MigraDocCore.Rendering" Version="1.3.67" />
-    <PackageReference Include="PDFsharp" Version="6.2.3" />
+    <PackageReference Include="PdfSharp-MigraDoc-GDI" Version="6.2.3" />
     <PackageReference Include="SQLitePCLRaw.core" Version="3.0.2" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.11" />
     <PackageReference Include="System.Data.SQLite" Version="2.0.2" />

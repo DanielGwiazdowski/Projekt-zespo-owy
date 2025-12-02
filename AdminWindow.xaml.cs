@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using PdfSharp.Pdf;
+using PdfSharp.Drawing;
 using static Projekt_zespołowy.MainWindow;
 
 #nullable enable
@@ -194,5 +197,133 @@ namespace Projekt_zespołowy
 
             produkty.Remove(produkt);
         }
+        private async void GenerujRaportSprzedazy_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataOd.SelectedDate == null || DataDo.SelectedDate == null)
+            {
+                MessageBox.Show("Wybierz zakres dat.");
+                return;
+            }
+
+            DateTime od = DataOd.SelectedDate.Value;
+            DateTime doo = DataDo.SelectedDate.Value.AddDays(1);
+
+            decimal suma = 0;
+            int liczba = 0;
+
+            try
+            {
+                using var con = new SQLiteConnection(_connectionString); // używamy tej samej bazy co reszta
+                await con.OpenAsync();
+
+                string sql = @"
+            SELECT SUM(suma_brutto) AS SumaKwot,
+                   COUNT(*) AS LiczbaZamowien
+            FROM zamowienia
+            WHERE datetime(data_zamowienia) >= datetime(@od)
+              AND datetime(data_zamowienia) < datetime(@do)
+        ";
+
+                using var cmd = new SQLiteCommand(sql, con);
+                cmd.Parameters.AddWithValue("@od", od.ToString("yyyy-MM-dd HH:mm:ss"));
+                cmd.Parameters.AddWithValue("@do", doo.ToString("yyyy-MM-dd HH:mm:ss"));
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                if (reader.Read())
+                {
+                    suma = reader["SumaKwot"] != DBNull.Value ? Convert.ToDecimal(reader["SumaKwot"]) : 0;
+                    liczba = reader["LiczbaZamowien"] != DBNull.Value ? Convert.ToInt32(reader["LiczbaZamowien"]) : 0;
+                }
+
+                PodsumowanieRaportu.Text =
+                    $"💰 Suma sprzedaży brutto: {suma:C}\n" +
+                    $"🧾 Liczba zamówień: {liczba}";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Błąd podczas generowania raportu: " + ex.Message);
+            }
+        }
+
+        private async void EksportujRaportPDF_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataOd.SelectedDate == null || DataDo.SelectedDate == null)
+            {
+                MessageBox.Show("Wybierz zakres dat.");
+                return;
+            }
+
+            DateTime od = DataOd.SelectedDate.Value;
+            DateTime doo = DataDo.SelectedDate.Value.AddDays(1);
+
+            decimal suma = 0;
+            int liczba = 0;
+
+            // 1️⃣ Pobieranie danych z SQLite
+            using (var con = new SQLiteConnection(_connectionString))
+            {
+                await con.OpenAsync();
+
+                string sql = @"
+            SELECT SUM(suma_brutto) AS SumaKwot,
+                   COUNT(*) AS LiczbaZamowien
+            FROM zamowienia
+            WHERE datetime(data_zamowienia) >= datetime(@od)
+              AND datetime(data_zamowienia) < datetime(@do)
+        ";
+
+                using var cmd = new SQLiteCommand(sql, con);
+                cmd.Parameters.AddWithValue("@od", od.ToString("yyyy-MM-dd HH:mm:ss"));
+                cmd.Parameters.AddWithValue("@do", doo.ToString("yyyy-MM-dd HH:mm:ss"));
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                if (reader.Read())
+                {
+                    suma = reader["SumaKwot"] != DBNull.Value ? Convert.ToDecimal(reader["SumaKwot"]) : 0;
+                    liczba = reader["LiczbaZamowien"] != DBNull.Value ? Convert.ToInt32(reader["LiczbaZamowien"]) : 0;
+                }
+            }
+
+            // 2️⃣ Tworzenie PDF
+            string filePath = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                $"RaportSprzedazy_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
+
+            var doc = new PdfSharp.Pdf.PdfDocument();
+            doc.Info.Title = "Raport sprzedaży";
+
+            var page = doc.AddPage();
+            var gfx = PdfSharp.Drawing.XGraphics.FromPdfPage(page);
+            var fontTitle = new PdfSharp.Drawing.XFont("Arial", 18);
+            var fontText = new PdfSharp.Drawing.XFont("Arial", 12);
+
+            int y = 40;
+
+            gfx.DrawString("Raport sprzedaży", fontTitle, PdfSharp.Drawing.XBrushes.Black, 40, y);
+            y += 40;
+
+            gfx.DrawString($"Zakres dat: {od:yyyy-MM-dd} → {doo.AddDays(-1):yyyy-MM-dd}", fontText, PdfSharp.Drawing.XBrushes.Black, 40, y);
+            y += 25;
+
+            gfx.DrawString($"Suma sprzedaży brutto:  {suma:C}", fontText, PdfSharp.Drawing.XBrushes.Black, 40, y);
+            y += 20;
+
+            gfx.DrawString($"Liczba zamówień:  {liczba}", fontText, PdfSharp.Drawing.XBrushes.Black, 40, y);
+            y += 20;
+
+            gfx.DrawString($"Data generowania: {DateTime.Now:yyyy-MM-dd HH:mm}", fontText, PdfSharp.Drawing.XBrushes.Gray, 40, y);
+
+            doc.Save(filePath);
+
+            // 3️⃣ Automatyczne otwarcie PDF w przeglądarce
+            System.Diagnostics.Process.Start(new ProcessStartInfo()
+            {
+                FileName = filePath,
+                UseShellExecute = true
+            });
+
+            MessageBox.Show("PDF został wygenerowany i otwarty.");
+        }
+
     }
 }

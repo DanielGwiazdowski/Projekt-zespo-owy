@@ -22,7 +22,17 @@ namespace Projekt_zespołowy.Views
         {
             InitializeComponent();
             Language = System.Windows.Markup.XmlLanguage.GetLanguage("pl-PL");
-            DataContext = Store;
+
+            DeliveryMethods = new ObservableCollection<DeliveryMethod>
+    {
+        new DeliveryMethod { Name = "Kurier", Price = 15 },
+        new DeliveryMethod { Name = "Paczkomat", Price = 12 },
+        new DeliveryMethod { Name = "Odbiór osobisty", Price = 0 }
+    };
+
+            SelectedDelivery = DeliveryMethods.First();
+
+            DataContext = this;
         }
 
         private void Increase_Click(object sender, RoutedEventArgs e)
@@ -215,6 +225,12 @@ namespace Projekt_zespołowy.Views
                 return;
             }
 
+            if (SelectedDelivery == null)
+            {
+                MessageBox.Show("Wybierz metodę dostawy");
+                return;
+            }
+
             // ====== 2. WALIDACJA FORMATU EMAIL ======
             if (!InputEmail.Text.Contains("@") || !InputEmail.Text.Contains("."))
             {
@@ -268,9 +284,16 @@ namespace Projekt_zespołowy.Views
                         summary += $"{item.Name} x {item.Quantity} = {item.LineTotal:F2} zł\n";
                     }
 
-                    summary += $"\nSuma netto: {Store.Subtotal:F2} zł" +
-                               $"\nVAT 23%: {Store.Vat:F2} zł" +
-                               $"\nRazem brutto: {Store.Total:F2} zł";
+
+                    decimal finalTotal = Store.Total + DeliveryCost;
+
+
+                    summary +=
+    $"\nSuma netto: {Store.Subtotal:F2} zł" +
+    $"\nVAT 23%: {Store.Vat:F2} zł" +
+    $"\nDostawa ({SelectedDelivery.Name}): {DeliveryCost:F2} zł" +
+    $"\nRAZEM DO ZAPŁATY: {finalTotal:F2} zł";
+
 
                     MessageBox.Show(summary, "Podsumowanie zamówienia",
                         MessageBoxButton.OK, MessageBoxImage.Information);
@@ -298,6 +321,22 @@ namespace Projekt_zespołowy.Views
                                 "Błąd bazy danych", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+
+        public class DeliveryMethod
+        {
+            public string Name { get; set; }
+            public decimal Price { get; set; }
+
+            public override string ToString()
+                => $"{Name} (+{Price:F2} zł)";
+        }
+
+        public ObservableCollection<DeliveryMethod> DeliveryMethods { get; set; }
+        public DeliveryMethod SelectedDelivery { get; set; }
+
+        private decimal DeliveryCost => SelectedDelivery?.Price ?? 0;
+
 
         private int EnsureClientExists(SQLiteConnection con, int userId)
         {
@@ -347,7 +386,7 @@ namespace Projekt_zespołowy.Views
         }
         private int CreateOrder(SQLiteConnection con, int clientId)
         {
-            decimal totalBruttoDecimal = Store.Total;
+            decimal totalBruttoDecimal = Store.Total + DeliveryCost;
 
             using (var cmd = new SQLiteCommand(
                 @"INSERT INTO zamowienia (data_zamowienia, status, suma_brutto, adres_dostawy, uwagi, klienci_id_klienta)
@@ -443,6 +482,11 @@ namespace Projekt_zespołowy.Views
             };
 
             smtp.Send(message);
+
+            message.Body +=
+    $"\n\nDostawa: {SelectedDelivery.Name}" +
+    $"\nKoszt dostawy: {DeliveryCost:F2} zł" +
+    $"\nRAZEM Z DOSTAWĄ: {(Store.Total + DeliveryCost):F2} zł";
         }
 
         private string GenerateInvoicePDF(int orderId)
@@ -499,7 +543,9 @@ namespace Projekt_zespołowy.Views
             var summary = section.AddParagraph();
             summary.AddFormattedText($"Suma netto: {Store.Subtotal:F2} zł\n");
             summary.AddFormattedText($"VAT 23%: {Store.Vat:F2} zł\n");
-            summary.AddFormattedText($"Razem brutto: {Store.Total:F2} zł", TextFormat.Bold);
+            summary.AddFormattedText(
+    $"Razem brutto (z dostawą): {(Store.Total + DeliveryCost):F2} zł",
+    TextFormat.Bold);
 
             // Render PDF
             PdfDocumentRenderer renderer = new PdfDocumentRenderer(true);

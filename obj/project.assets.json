@@ -2474,9 +2474,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\PC\\Source\\Repos\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "projectUniqueName": "C:\\Users\\PC\\source\\repos\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
       "projectName": "Projekt zespołowy",
-      "projectPath": "C:\\Users\\PC\\Source\\Repos\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "projectPath": "C:\\Users\\PC\\source\\repos\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
       "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\PC\\Source\\Repos\\Projekt-zespo-owy\\obj\\",
       "projectStyle": "PackageReference",

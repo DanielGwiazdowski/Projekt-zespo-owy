@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "u9kovvE6q4RRczUd5Sg54+rfYrMhp8eXhOS+DAnTfZOzY7lxY+1pcIsvOTCPgndGWCZd7lFILvPenlK483DxYA==",
+  "dgSpecHash": "17IJkA49mh9OnpBoSJclEWiuZgQPiF0T+mh0ucQnsccx6Yru/Q81Q8+3+vvyul7i+FMDz6LMxcNktxBkaJbIBA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\PC\\Source\\Repos\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+  "projectFilePath": "C:\\Users\\PC\\source\\repos\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\PC\\.nuget\\packages\\controlzex\\7.0.2\\controlzex.7.0.2.nupkg.sha512",
     "C:\\Users\\PC\\.nuget\\packages\\entityframework\\6.5.1\\entityframework.6.5.1.nupkg.sha512",

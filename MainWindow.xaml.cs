@@ -311,15 +311,6 @@ namespace Projekt_zespołowy
                 };
                 panel.Children.Add(cena);
 
-                var quantity = new TextBlock
-                {
-                    Text = $"Dostępne: {p.ilość} szt.",
-                    Margin = new Thickness(5, 0, 5, 5),
-                    FontWeight = FontWeights.SemiBold,
-                    Foreground = Brushes.DarkBlue,
-                    TextAlignment = TextAlignment.Center
-                };
-                panel.Children.Add(quantity);
 
                 var btnAdd = new Button
                 {

@@ -396,15 +396,10 @@ C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\Microsoft.Ex
 C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\Microsoft.Extensions.Primitives.dll
 C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\MigraDocCore.DocumentObjectModel.dll
 C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\MigraDocCore.Rendering.dll
-C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharp.BarCodes.dll
-C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharp.Charting.dll
 C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharp.Cryptography.dll
-C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharp.Quality.dll
 C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharp.Shared.dll
-C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharp.Snippets.dll
 C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharp.System.dll
 C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharp.WPFonts.dll
-C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharp.dll
 C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharpCore.dll
 C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharpCore.Charting.dll
 C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\ICSharpCode.SharpZipLib.dll
@@ -678,3 +673,11 @@ C:\Users\osume\source\repos\DanielGwiazdowski\Projekt-zespo-owy\bin\Debug\net8.0
 C:\Users\osume\source\repos\DanielGwiazdowski\Projekt-zespo-owy\bin\Debug\net8.0-windows\MigraDoc.DocumentObjectModel.dll
 C:\Users\osume\source\repos\DanielGwiazdowski\Projekt-zespo-owy\bin\Debug\net8.0-windows\MigraDoc.Rendering-gdi.dll
 C:\Users\osume\source\repos\DanielGwiazdowski\Projekt-zespo-owy\bin\Debug\net8.0-windows\MigraDoc.RtfRendering-gdi.dll
+C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharp-gdi.dll
+C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharp.BarCodes-gdi.dll
+C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharp.Charting-gdi.dll
+C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharp.Quality-gdi.dll
+C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharp.Snippets-gdi.dll
+C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\MigraDoc.DocumentObjectModel.dll
+C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\MigraDoc.Rendering-gdi.dll
+C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\MigraDoc.RtfRendering-gdi.dll

@@ -22,6 +22,8 @@ using static Projekt_zespołowy.MainWindow;
 
 #nullable enable
 using IOPath = System.IO.Path;
+using System.Net.Mail;
+using System.Net;
 
 namespace Projekt_zespołowy
 {
@@ -33,6 +35,8 @@ namespace Projekt_zespołowy
 
         public AdminWindow()
         {
+
+
             InitializeComponent();
 
             // Kategorie przykładowe
@@ -47,7 +51,12 @@ namespace Projekt_zespołowy
             ListaElementow.ItemsSource = produkty;
 
             ZaladujProdukty();
+            ZaladujZamowienia();
+
         }
+
+        private ObservableCollection<ZamowienieAdmin> Zamowienia
+        = new ObservableCollection<ZamowienieAdmin>(); 
 
         private void ZaladujProdukty()
         {
@@ -73,6 +82,40 @@ namespace Projekt_zespołowy
                     Zdjecie = reader["zdjecie"]?.ToString() ?? ""
                 });
             }
+        }
+
+        private void ZaladujZamowienia()
+        {
+            Zamowienia.Clear();
+
+            using (var con = new SQLiteConnection("Data Source=bazaAPH.db;Version=3;"))
+            {
+                con.Open();
+
+                using (var cmd = new SQLiteCommand(
+                    @"SELECT 
+                id_zamowienia, 
+                data_zamowienia, 
+                status, 
+                suma_brutto 
+              FROM zamowienia
+              ORDER BY id_zamowienia DESC", con))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Zamowienia.Add(new ZamowienieAdmin
+                        {
+                            Id = reader.GetInt32(0),
+                            Data = reader.GetString(1),
+                            Status = reader.GetString(2),
+                            Suma = reader.GetDouble(3)
+                        });
+                    }
+                }
+            }
+
+            ListaZamowien.ItemsSource = Zamowienia;
         }
 
         // HANDLER DO OTWIERANIA OKNA Z UŻYTKOWNIKAMI
@@ -244,6 +287,112 @@ namespace Projekt_zespołowy
                 MessageBox.Show("Błąd podczas generowania raportu: " + ex.Message);
             }
         }
+
+        public class ZamowienieAdmin
+        {
+            public int Id { get; set; }
+            public string Data { get; set; }
+            public string Status { get; set; }
+            public double Suma { get; set; }
+        }
+
+
+        // ===== ID WYBRANEGO ZAMÓWIENIA =====
+        private int SelectedOrderId = 0;
+
+        // ===== WYBÓR ZAMÓWIENIA =====
+        private void ListaZamowien_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ListaZamowien.SelectedItem is ZamowienieAdmin zam)
+            {
+                SelectedOrderId = zam.Id;
+            }
+        }
+
+        // ===== ZMIANA STATUSU =====
+
+        private void ZmienStatusZamowienia_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedOrderId == 0)
+            {
+                MessageBox.Show("Nie wybrano zamówienia");
+                return;
+            }
+
+            if (StatusCombo.SelectedItem == null)
+            {
+                MessageBox.Show("Wybierz status");
+                return;
+            }
+
+            string newStatus =
+                (StatusCombo.SelectedItem as ComboBoxItem).Content.ToString();
+
+            try
+            {
+                string dbPath = System.IO.Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "bazaAPH.db"
+                );
+
+                using (var con = new SQLiteConnection($"Data Source={dbPath};Version=3;"))
+                {
+                    con.Open();
+
+                    using (var cmd = new SQLiteCommand(
+                        "UPDATE zamowienia SET status = @s WHERE id_zamowienia = @id", con))
+                    {
+                        cmd.Parameters.AddWithValue("@s", newStatus);
+                        cmd.Parameters.AddWithValue("@id", SelectedOrderId);
+
+                        int rows = cmd.ExecuteNonQuery();
+
+                        if (rows == 0)
+                        {
+                            MessageBox.Show("❌ Status NIE został zmieniony (brak rekordu)");
+                            return;
+                        }
+                    }
+                }
+
+                // 🔥 WYSYŁKA MAILA
+                SendStatusChangeEmail(SelectedOrderId, newStatus);
+
+                MessageBox.Show("✅ Status zmieniony i mail wysłany");
+                ZaladujZamowienia(); // odśwież listę
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void SendStatusChangeEmail(int orderId, string newStatus)
+        {
+            var mail = new MailMessage();
+            mail.From = new MailAddress("esmeralda48@ethereal.email");
+
+            // testowo – Ethereal przyjmie każdy adres
+            mail.To.Add("ehereal@email.pl");
+
+            mail.Subject = $"Zmiana statusu zamówienia #{orderId}";
+            mail.Body =
+                $"Status zamówienia #{orderId} został zmieniony.\n\n" +
+                $"Nowy status: {newStatus}\n\n" +
+                $"Data: {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+
+            var smtp = new SmtpClient("smtp.ethereal.email", 587)
+            {
+                Credentials = new NetworkCredential(
+                    "esmeralda48@ethereal.email",
+                    "aqa7jcJRjVNdwDBuUg"
+                ),
+                EnableSsl = true
+            };
+
+            smtp.Send(mail);
+        }
+
 
         private async void EksportujRaportPDF_Click(object sender, RoutedEventArgs e)
         {

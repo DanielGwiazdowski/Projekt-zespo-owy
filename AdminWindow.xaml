@@ -208,6 +208,56 @@
         Margin="0,10,0,0"/>
 
 
+                <!-- Zarządzanie zamówieniami -->
+                <Border Background="White" CornerRadius="5" Padding="15" Margin="0,20,0,20">
+                    <StackPanel>
+
+                        <TextBlock Text="Zarządzanie zamówieniami"
+                   FontSize="18"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,15"/>
+
+                        <!-- Lista zamówień -->
+                        <ListView x:Name="ListaZamowien"
+                  Height="200"
+                  SelectionChanged="ListaZamowien_SelectionChanged">
+
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="ID" Width="50"
+                                    DisplayMemberBinding="{Binding Id}"/>
+                                    <GridViewColumn Header="Data" Width="150"
+                                    DisplayMemberBinding="{Binding Data}"/>
+                                    <GridViewColumn Header="Status" Width="120"
+                                    DisplayMemberBinding="{Binding Status}"/>
+                                    <GridViewColumn Header="Kwota" Width="100"
+                                    DisplayMemberBinding="{Binding Suma}"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+
+                        <!-- Zmiana statusu -->
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                            <ComboBox x:Name="StatusCombo"
+                      Width="180"
+                      Margin="0,0,10,0">
+                                <ComboBoxItem Content="Nowe"/>
+                                <ComboBoxItem Content="W realizacji"/>
+                                <ComboBoxItem Content="Wysłane"/>
+                                <ComboBoxItem Content="Zrealizowane"/>
+                                <ComboBoxItem Content="Anulowane"/>
+                            </ComboBox>
+
+                            <Button Content="Zmień status"
+                    Click="ZmienStatusZamowienia_Click"
+                    Background="#27AE60"
+                    Foreground="White"
+                    Padding="15,5"/>
+                        </StackPanel>
+
+                    </StackPanel>
+                </Border>
+
             </StackPanel>
         </ScrollViewer>
     </Grid>

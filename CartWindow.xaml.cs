@@ -9,6 +9,10 @@ using MigraDocCore.DocumentObjectModel;
 using MigraDocCore.Rendering;
 using System.IO;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Mail;
+
+
 
 namespace Projekt_zespołowy.Views
 {
@@ -193,15 +197,33 @@ namespace Projekt_zespołowy.Views
 
         private void PlaceOrder_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Walidacja
+            // ====== 1. WALIDACJA FORMULARZA ======
             if (string.IsNullOrWhiteSpace(InputName.Text) ||
+                string.IsNullOrWhiteSpace(InputEmail.Text) ||
                 string.IsNullOrWhiteSpace(InputStreet.Text) ||
                 string.IsNullOrWhiteSpace(InputBuildingNumber.Text) ||
                 string.IsNullOrWhiteSpace(InputCity.Text) ||
                 string.IsNullOrWhiteSpace(InputZip.Text) ||
                 string.IsNullOrWhiteSpace(InputPhone.Text))
             {
-                MessageBox.Show("Uzupełnij wszystkie pola!");
+                MessageBox.Show(
+                    "Uzupełnij wszystkie pola formularza (w tym adres e-mail).",
+                    "Brak danych",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning
+                );
+                return;
+            }
+
+            // ====== 2. WALIDACJA FORMATU EMAIL ======
+            if (!InputEmail.Text.Contains("@") || !InputEmail.Text.Contains("."))
+            {
+                MessageBox.Show(
+                    "Podaj poprawny adres e-mail.",
+                    "Błędny e-mail",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning
+                );
                 return;
             }
 
@@ -229,6 +251,7 @@ namespace Projekt_zespołowy.Views
                     int klientId = EnsureClientExists(con, CurrentUser.Id);
                     int orderId = CreateOrder(con, klientId);
                     InsertOrderItems(con, orderId);
+                    SendOrderEmailEthereal(orderId);
 
                     // komunikat
                     MessageBox.Show("Zamówienie złożone pomyślnie!");
@@ -381,6 +404,45 @@ namespace Projekt_zespołowy.Views
                     throw new Exception("Błąd podczas wstawiania pozycji zamówienia.", ex);
                 }
             }
+        }
+
+        private void SendOrderEmailEthereal(int orderId)
+        {
+            var message = new MailMessage();
+            message.From = new MailAddress("esmeralda48@ethereal.email");
+            message.To.Add("ehereal@email.pl"); // ← odbiorca (może być cokolwiek)
+            message.Subject = $"Nowe zamówienie #{orderId}";
+
+            message.Body =
+                $"NOWE ZAMÓWIENIE #{orderId}\n\n" +
+                $"Email klienta: {InputEmail.Text}\n" +
+                $"Imię i nazwisko: {InputName.Text}\n" +
+                $"Telefon: {InputPhone.Text}\n\n" +
+                $"Adres:\n{InputStreet.Text} {InputBuildingNumber.Text}\n" +
+                $"{InputZip.Text} {InputCity.Text}\n\n" +
+                $"Produkty:\n";
+
+            foreach (var item in Store.Items)
+            {
+                message.Body +=
+                    $"{item.Name} x {item.Quantity} = {item.LineTotal:F2} zł\n";
+            }
+
+            message.Body +=
+                $"\nSuma netto: {Store.Subtotal:F2} zł" +
+                $"\nVAT: {Store.Vat:F2} zł" +
+                $"\nRAZEM: {Store.Total:F2} zł";
+
+            var smtp = new SmtpClient("smtp.ethereal.email", 587)
+            {
+                Credentials = new NetworkCredential(
+                    "esmeralda48@ethereal.email", // USERNAME
+                    "aqa7jcJRjVNdwDBuUg"          // PASSWORD
+                ),
+                EnableSsl = true
+            };
+
+            smtp.Send(message);
         }
 
         private string GenerateInvoicePDF(int orderId)

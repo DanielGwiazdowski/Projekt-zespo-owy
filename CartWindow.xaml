@@ -189,7 +189,10 @@
 		<TextBlock Text="Uwagi do zamówienia" Foreground="Gray" Margin="0,8,0,0"/>
 		<TextBox x:Name="InputUwagi" Margin="0,2"/>
 
-        <Button Content="Złóż zamówienie"
+                        <TextBlock Text="Adres e-mail" Foreground="Gray" Margin="0,8,0,0"/>
+                        <TextBox x:Name="InputEmail" Margin="0,2"/>
+
+                        <Button Content="Złóż zamówienie"
                 Background="#007BFF"
                 Foreground="White"
                 Height="38"

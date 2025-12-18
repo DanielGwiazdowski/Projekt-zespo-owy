@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "K0TvC2ZgtA0=",
+  "dgSpecHash": "N7LQBh4XnJw=",
   "success": true,
-  "projectFilePath": "C:\\Users\\osume\\Downloads\\Projekt-zespo-owy (1)\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+  "projectFilePath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\osume\\.nuget\\packages\\controlzex\\7.0.2\\controlzex.7.0.2.nupkg.sha512",
     "C:\\Users\\osume\\.nuget\\packages\\entityframework\\6.5.1\\entityframework.6.5.1.nupkg.sha512",
@@ -53,10 +53,94 @@
       "code": "NU1608",
       "level": "Warning",
       "message": "Wykryta wersja pakietu jest poza ograniczeniami zależności: element MahApps.Metro 2.4.11 wymaga wersji ControlzEx (>= 4.4.0 && < 6.0.0), ale rozpoznano wersję ControlzEx 7.0.2.",
-      "projectPath": "C:\\Users\\osume\\Downloads\\Projekt-zespo-owy (1)\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "projectPath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\osume\\Downloads\\Projekt-zespo-owy (1)\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "filePath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
       "libraryId": "ControlzEx",
+      "targetGraphs": [
+        "net8.0-windows7.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Pakiet „SixLabors.ImageSharp” 1.0.4 ma znane wysoka luki w zabezpieczeniach o ważności, https://github.com/advisories/GHSA-2cmq-823j-5qj8",
+      "projectPath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "libraryId": "SixLabors.ImageSharp",
+      "targetGraphs": [
+        "net8.0-windows7.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "Pakiet „SixLabors.ImageSharp” 1.0.4 ma znane umiarkowana luki w zabezpieczeniach o ważności, https://github.com/advisories/GHSA-5x7m-6737-26cr",
+      "projectPath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "libraryId": "SixLabors.ImageSharp",
+      "targetGraphs": [
+        "net8.0-windows7.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Pakiet „SixLabors.ImageSharp” 1.0.4 ma znane wysoka luki w zabezpieczeniach o ważności, https://github.com/advisories/GHSA-63p8-c4ww-9cg7",
+      "projectPath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "libraryId": "SixLabors.ImageSharp",
+      "targetGraphs": [
+        "net8.0-windows7.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Pakiet „SixLabors.ImageSharp” 1.0.4 ma znane wysoka luki w zabezpieczeniach o ważności, https://github.com/advisories/GHSA-65x7-c272-7g7r",
+      "projectPath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "libraryId": "SixLabors.ImageSharp",
+      "targetGraphs": [
+        "net8.0-windows7.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "Pakiet „SixLabors.ImageSharp” 1.0.4 ma znane umiarkowana luki w zabezpieczeniach o ważności, https://github.com/advisories/GHSA-g85r-6x2q-45w7",
+      "projectPath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "libraryId": "SixLabors.ImageSharp",
+      "targetGraphs": [
+        "net8.0-windows7.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "Pakiet „SixLabors.ImageSharp” 1.0.4 ma znane umiarkowana luki w zabezpieczeniach o ważności, https://github.com/advisories/GHSA-qxrv-gp6x-rc23",
+      "projectPath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "libraryId": "SixLabors.ImageSharp",
+      "targetGraphs": [
+        "net8.0-windows7.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "Pakiet „SixLabors.ImageSharp” 1.0.4 ma znane umiarkowana luki w zabezpieczeniach o ważności, https://github.com/advisories/GHSA-rxmq-m78w-7wmc",
+      "projectPath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\osume\\source\\repos\\DanielGwiazdowski\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+      "libraryId": "SixLabors.ImageSharp",
       "targetGraphs": [
         "net8.0-windows7.0"
       ]

@@ -16,6 +16,7 @@
           "PDFsharp-MigraDoc-GDI": "6.2.3",
           "SQLitePCLRaw.core": "3.0.2",
           "SQLitePCLRaw.lib.e_sqlite3": "2.1.11",
+          "SixLabors.ImageSharp": "1.0.4",
           "System.Data.SQLite": "2.0.2",
           "System.Data.SQLite.EF6": "2.0.2"
         },

@@ -495,12 +495,12 @@ namespace Projekt_zespołowy
             // 3. Zbieranie filtrów marek (Producentów)
             var selectedBrands = new List<string>();
 
-            if (CheckLUK.IsChecked == true) selectedBrands.Add("LUK");
-            if (CheckBosch.IsChecked == true) selectedBrands.Add("Bosch");
-            if (CheckATE.IsChecked == true) selectedBrands.Add("ATE");
-            if (CheckCastrol.IsChecked == true) selectedBrands.Add("Castrol");
-            if (CheckSachs.IsChecked == true) selectedBrands.Add("Sachs");
-            if (CheckValeo.IsChecked == true) selectedBrands.Add("Valeo");
+            if (CheckLUK.IsChecked == true) selectedBrands.Add(Normalize("LUK"));
+            if (CheckBosch.IsChecked == true) selectedBrands.Add(Normalize("Bosch"));
+            if (CheckATE.IsChecked == true) selectedBrands.Add(Normalize("ATE"));
+            if (CheckCastrol.IsChecked == true) selectedBrands.Add(Normalize("Castrol"));
+            if (CheckSachs.IsChecked == true) selectedBrands.Add(Normalize("Sachs"));
+            if (CheckValeo.IsChecked == true) selectedBrands.Add(Normalize("Valeo"));
 
             // 4. FILTROWANIE PO CENIE I MARCE NA AKTUALNEJ LIŚCIE
 
@@ -512,7 +512,9 @@ namespace Projekt_zespołowy
             // B. Filtrowanie po marce (tylko jeśli wybrano)
             if (selectedBrands.Any())
             {
-                filtered = filtered.Where(p => selectedBrands.Contains(p.Producent));
+                filtered = filtered.Where(p =>
+                    selectedBrands.Contains(Normalize(p.Producent))
+                );
             }
 
             // 5. Aktualizacja listy i wyświetlania

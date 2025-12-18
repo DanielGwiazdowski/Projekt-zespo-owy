@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Kuba\\Source\\Repos\\Projekt-zespo-owy2\\Projekt zespołowy.csproj": {}
+    "C:\\Users\\osume\\Downloads\\Projekt-zespo-owy (1)\\Projekt-zespo-owy\\Projekt zespołowy.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Kuba\\Source\\Repos\\Projekt-zespo-owy2\\Projekt zespołowy.csproj": {
+    "C:\\Users\\osume\\Downloads\\Projekt-zespo-owy (1)\\Projekt-zespo-owy\\Projekt zespołowy.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Kuba\\Source\\Repos\\Projekt-zespo-owy2\\Projekt zespołowy.csproj",
+        "projectUniqueName": "C:\\Users\\osume\\Downloads\\Projekt-zespo-owy (1)\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
         "projectName": "Projekt zespołowy",
-        "projectPath": "C:\\Users\\Kuba\\Source\\Repos\\Projekt-zespo-owy2\\Projekt zespołowy.csproj",
-        "packagesPath": "C:\\Users\\Kuba\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Kuba\\Source\\Repos\\Projekt-zespo-owy2\\obj\\",
+        "projectPath": "C:\\Users\\osume\\Downloads\\Projekt-zespo-owy (1)\\Projekt-zespo-owy\\Projekt zespołowy.csproj",
+        "packagesPath": "C:\\Users\\osume\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\osume\\Downloads\\Projekt-zespo-owy (1)\\Projekt-zespo-owy\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Kuba\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\osume\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],

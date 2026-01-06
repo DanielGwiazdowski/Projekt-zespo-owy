@@ -73,6 +73,7 @@ namespace Projekt_zespołowy
                 BtnLogin.Visibility = Visibility.Collapsed;
                 BtnRegister.Visibility = Visibility.Collapsed;
                 BtnLogout.Visibility = Visibility.Visible;
+                BtnClaims.Visibility = Visibility.Visible;
                 BtnAdmin.Visibility = UserSession.Role == "admin" ? Visibility.Visible : Visibility.Collapsed;
             }
             else
@@ -80,6 +81,7 @@ namespace Projekt_zespołowy
                 BtnLogin.Visibility = Visibility.Visible;
                 BtnRegister.Visibility = Visibility.Visible;
                 BtnLogout.Visibility = Visibility.Collapsed;
+                BtnClaims.Visibility = Visibility.Collapsed;
                 BtnAdmin.Visibility = Visibility.Collapsed;
             }
         }
@@ -102,6 +104,21 @@ namespace Projekt_zespołowy
                     BtnAdmin.Visibility = Visibility.Visible;
 
                 MessageBox.Show($"Zalogowano użytkownika: {loginWindow.Username}");
+            }
+        }
+        private void BtnClaims_Click(object sender, RoutedEventArgs e)
+        {
+            // Zakładając, że masz widok o nazwie ClaimsWindow w folderze Views
+            // Jeśli jeszcze go nie stworzyłeś, musisz dodać nowy element typu Window do projektu
+            try
+            {
+                var claimsWindow = new Projekt_zespołowy.Views.ClaimsWindow();
+                claimsWindow.Owner = this;
+                claimsWindow.ShowDialog();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Okno reklamacji jest w trakcie przygotowania lub nie zostało odnalezione.");
             }
         }
 

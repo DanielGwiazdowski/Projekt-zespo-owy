@@ -681,3 +681,5 @@ C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\PdfSharp.Sni
 C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\MigraDoc.DocumentObjectModel.dll
 C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\MigraDoc.Rendering-gdi.dll
 C:\Users\PC\Source\Repos\Projekt-zespo-owy\bin\Debug\net8.0-windows\MigraDoc.RtfRendering-gdi.dll
+C:\Users\osume\source\repos\DanielGwiazdowski\Projekt-zespo-owy\obj\Debug\net8.0-windows\ClaimsWindow.baml
+C:\Users\osume\source\repos\DanielGwiazdowski\Projekt-zespo-owy\obj\Debug\net8.0-windows\ClaimsWindow.g.cs

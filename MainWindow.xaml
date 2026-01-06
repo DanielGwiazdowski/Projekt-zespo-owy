@@ -299,6 +299,83 @@
                     <WrapPanel x:Name="ProductsWrapPanel" Margin="8">
                         
                     </WrapPanel>
+                    <Border Margin="8" Padding="12" Background="White" CornerRadius="12"
+        BorderBrush="#e6e6e6" BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="Dodaj opinię" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                            <TextBlock Text="Ocena:" FontWeight="SemiBold"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,6,0,10">
+                                <Button Content="★" FontSize="20" Width="40" Tag="1" Click="Star_Click"/>
+                                <Button Content="★" FontSize="20" Width="40" Tag="2" Click="Star_Click"/>
+                                <Button Content="★" FontSize="20" Width="40" Tag="3" Click="Star_Click"/>
+                                <Button Content="★" FontSize="20" Width="40" Tag="4" Click="Star_Click"/>
+                                <Button Content="★" FontSize="20" Width="40" Tag="5" Click="Star_Click"/>
+
+                                <TextBlock x:Name="RatingLabel" Text="0/5" Margin="12,0,0,0"
+                       VerticalAlignment="Center" FontWeight="Bold"/>
+                            </StackPanel>
+
+                            <TextBlock Text="Komentarz:" FontWeight="SemiBold"/>
+                            <TextBox x:Name="OpinionCommentBox" Height="70" TextWrapping="Wrap"
+                 AcceptsReturn="True" Margin="0,6,0,10"/>
+
+                            <TextBlock Text="Identyfikator produktu (np. nazwa/kod):" FontWeight="SemiBold"/>
+                            <TextBox x:Name="ProductKeyBox" Margin="0,6,0,10" />
+
+                            <Button Content="Wyślij opinię"
+                Background="#1f6feb" Foreground="White"
+                Padding="12,8" FontWeight="SemiBold"
+                Click="SubmitOpinion_Click"/>
+
+                            <TextBlock Margin="0,8,0,0" Foreground="#666"
+                   Text="Opinia pojawi się po zatwierdzeniu przez administratora."/>
+                        </StackPanel>
+                    </Border>
+                    <!-- Lista opinii dla wybranego produktu -->
+                    <Border Margin="8" Padding="12" Background="White" CornerRadius="12"
+        BorderBrush="#e6e6e6" BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock x:Name="OpinionsTitle"
+                   Text="Opinie"
+                   FontSize="18"
+                   FontWeight="Bold"
+                   Margin="0,0,0,10"/>
+
+                            <ItemsControl x:Name="OpinionsList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Padding="10" Margin="0,0,0,10"
+                            Background="#F7F9FC" CornerRadius="10"
+                            BorderBrush="#D0D7E2" BorderThickness="1">
+                                            <StackPanel>
+                                                <DockPanel>
+                                                    <TextBlock Text="{Binding UserDisplayName}"
+                                           FontWeight="SemiBold" FontSize="14" />
+                                                    <TextBlock Text="{Binding CreatedAt, StringFormat={}{0:yyyy-MM-dd}}"
+                                           Foreground="#666" FontSize="12"
+                                           DockPanel.Dock="Right" HorizontalAlignment="Right"/>
+                                                </DockPanel>
+
+                                                <TextBlock Text="{Binding Rating, StringFormat=Ocena: {0}/5}"
+                                       Margin="0,4,0,0" FontWeight="Bold"/>
+
+                                                <TextBlock Text="{Binding Comment}" TextWrapping="Wrap"
+                                       Margin="0,6,0,0"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBlock x:Name="NoOpinionsText"
+                   Text="Brak opinii dla wybranego produktu."
+                   Foreground="#666"
+                   Visibility="Collapsed"/>
+                        </StackPanel>
+                    </Border>
+
+
                 </StackPanel>
             </ScrollViewer>
         </Grid>

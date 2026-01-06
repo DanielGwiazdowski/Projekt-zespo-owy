@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\PC\source\repos\Projekt-zespo-owy\obj\Debug\net8.0-windows\
+C:\Users\Kuba\Source\Repos\Projekt-zespo-owy9\obj\Debug\net8.0-windows\
 Projekt_zespołowy
 none
 false
-TRACE;DEBUG;NET;NET8_0;NETCOREAPP
-C:\Users\PC\source\repos\Projekt-zespo-owy\App.xaml
-71543702584
+TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
+C:\Users\Kuba\Source\Repos\Projekt-zespo-owy9\App.xaml
+8-631184076
 
-13-762015769
-240182501090
-AdminWindow.xaml;CartWindow.xaml;images\LoginWindow.xaml;LoginWindow.xaml;MainWindow.xaml;RegisterWindow.xaml;UserListWindow.xaml;
+14-973404443
+240-1360608395
+AdminWindow.xaml;CartWindow.xaml;ClaimsWindow.xaml;images\LoginWindow.xaml;LoginWindow.xaml;MainWindow.xaml;RegisterWindow.xaml;UserListWindow.xaml;
 
 False
 

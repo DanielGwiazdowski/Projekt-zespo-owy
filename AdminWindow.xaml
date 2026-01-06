@@ -257,6 +257,98 @@
 
                     </StackPanel>
                 </Border>
+                <!-- ===================== -->
+                <!-- OPINIE (Task 15-16)   -->
+                <!-- ===================== -->
+                <Border Background="White" CornerRadius="5" Padding="15" Margin="0,20,0,20">
+                    <StackPanel>
+
+                        <TextBlock Text="Moderacja opinii"
+                   FontSize="18"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,15"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Button Content="Odśwież"
+                    Width="120"
+                    Margin="0,0,10,0"
+                    Click="Opinie_Refresh_Click"/>
+
+                            <CheckBox x:Name="ShowOnlyPendingOpinions"
+                      Content="Pokaż tylko niezatwierdzone"
+                      VerticalAlignment="Center"
+                      Checked="Opinie_FilterChanged"
+                      Unchecked="Opinie_FilterChanged"/>
+                        </StackPanel>
+
+                        <DataGrid x:Name="OpinionsGrid"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="True"
+                  Height="260"
+                  BorderBrush="#CCCCCC"
+                  BorderThickness="1"
+                  SelectionMode="Single">
+
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Produkt (ID)"
+                                    Binding="{Binding ProductKey}"
+                                    Width="110"/>
+
+                                <DataGridTextColumn Header="Użytkownik"
+                                    Binding="{Binding UserDisplayName}"
+                                    Width="140"/>
+
+                                <DataGridTextColumn Header="Ocena"
+                                    Binding="{Binding Rating}"
+                                    Width="60"/>
+
+                                <DataGridTextColumn Header="Komentarz"
+                                    Binding="{Binding Comment}"
+                                    Width="*"/>
+
+                                <DataGridTextColumn Header="Data"
+                                    Binding="{Binding CreatedAt}"
+                                    Width="140"/>
+
+                                <DataGridCheckBoxColumn Header="Approved"
+                                        Binding="{Binding IsApproved}"
+                                        Width="80"/>
+
+                                <DataGridCheckBoxColumn Header="Hidden"
+                                        Binding="{Binding IsHidden}"
+                                        Width="70"/>
+
+                                <DataGridTemplateColumn Header="Akcje" Width="260">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button Content="Akceptuj"
+                                        Margin="0,0,6,0"
+                                        Click="Opinie_Approve_Click"/>
+
+                                                <Button Content="Ukryj/Pokaż"
+                                        Margin="0,0,6,0"
+                                        Click="Opinie_ToggleHide_Click"/>
+
+                                                <Button Content="Usuń"
+                                        Background="#DC3545"
+                                        Foreground="White"
+                                        Click="Opinie_Delete_Click"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+
+                        <TextBlock Margin="0,10,0,0"
+                   Foreground="#666"
+                   Text="Akceptuj = opinia widoczna dla klientów. Ukryj = nie wyświetlaj mimo akceptacji."/>
+                    </StackPanel>
+                </Border>
+
 
             </StackPanel>
         </ScrollViewer>

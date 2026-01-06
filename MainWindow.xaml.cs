@@ -24,6 +24,77 @@ namespace Projekt_zespołowy
             public static string Role { get; set; } = "";
             public static int UserId { get; set; } = 0;
         }
+        public class Opinion
+        {
+            public Guid Id { get; set; } = Guid.NewGuid();
+            public string ProductKey { get; set; } = "";
+            public string UserDisplayName { get; set; } = "Anonim";
+            public int Rating { get; set; }
+            public string Comment { get; set; } = "";
+            public DateTime CreatedAt { get; set; } = DateTime.Now;
+            public bool IsApproved { get; set; } = false;
+            public bool IsHidden { get; set; } = false;
+        }
+        public static class OpinionsStore
+        {
+            private static readonly string FilePath =
+                System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "AutoPartHub", "opinions.json");
+
+            public static System.Collections.ObjectModel.ObservableCollection<Opinion> Opinions { get; private set; }
+                = new System.Collections.ObjectModel.ObservableCollection<Opinion>();
+
+            public static void Load()
+            {
+                try
+                {
+                    var dir = System.IO.Path.GetDirectoryName(FilePath);
+                    if (!System.IO.Directory.Exists(dir))
+                        System.IO.Directory.CreateDirectory(dir!);
+
+                    if (!System.IO.File.Exists(FilePath))
+                        return;
+
+                    var json = System.IO.File.ReadAllText(FilePath);
+                    Opinions =
+                        System.Text.Json.JsonSerializer.Deserialize
+                        <System.Collections.ObjectModel.ObservableCollection<Opinion>>(json)
+                        ?? new System.Collections.ObjectModel.ObservableCollection<Opinion>();
+                }
+                catch { }
+            }
+
+            public static void Save()
+            {
+                try
+                {
+                    var json = System.Text.Json.JsonSerializer.Serialize(
+                        Opinions,
+                        new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+
+                    System.IO.File.WriteAllText(FilePath, json);
+                }
+                catch { }
+            }
+
+            public static void Add(Opinion opinion)
+            {
+                Opinions.Add(opinion);
+                Save();
+            }
+
+            public static void Remove(Guid id)
+            {
+                var item = Opinions.FirstOrDefault(o => o.Id == id);
+                if (item != null)
+                {
+                    Opinions.Remove(item);
+                    Save();
+                }
+            }
+        }
+
 
         // ====== NOWE: przechowywanie produktów i kategorii ======
         private List<Produkt> _allProducts = new List<Produkt>();
@@ -32,9 +103,16 @@ namespace Projekt_zespołowy
         // ⭐️ DODANE POLE DO PRZECHOWYWANIA AKTYWNEJ KATEGORII
         private string _currentCategory = null;
 
+        // ====== OPINIE (Task 13-16) ======
+        private int _selectedRating = 0;                 // <-- DODANE
+        private Produkt _selectedProductForOpinion = null; // <-- DODANE (wybrany produkt do opinii)
+
         public MainWindow()
         {
             InitializeComponent();
+
+            // ===== OPINIE: wczytanie z JSON (bez bazy) =====
+            OpinionsStore.Load(); // <-- DODANE
 
             CartPage.SharedStore.PropertyChanged += SharedStore_PropertyChanged;
 
@@ -106,10 +184,9 @@ namespace Projekt_zespołowy
                 MessageBox.Show($"Zalogowano użytkownika: {loginWindow.Username}");
             }
         }
+
         private void BtnClaims_Click(object sender, RoutedEventArgs e)
         {
-            // Zakładając, że masz widok o nazwie ClaimsWindow w folderze Views
-            // Jeśli jeszcze go nie stworzyłeś, musisz dodać nowy element typu Window do projektu
             try
             {
                 var claimsWindow = new Projekt_zespołowy.Views.ClaimsWindow();
@@ -233,8 +310,12 @@ namespace Projekt_zespołowy
                 var panel = new StackPanel { Orientation = Orientation.Vertical };
                 border.Child = panel;
 
-                // Logika wyświetlania zdjęć... (pominięta dla zwięzłości)
-                // ...
+                // ===== OPINIE: wybór produktu do opinii kliknięciem kafelka =====
+                border.MouseLeftButtonUp += (s, e) =>
+                {
+                    _selectedProductForOpinion = p;
+                    ShowOpinionsForSelectedProduct();
+                };
 
                 var img = new Image
                 {
@@ -244,20 +325,17 @@ namespace Projekt_zespołowy
 
                 try
                 {
-                    // 1. CZYSZCZENIE ŚCIEŻKI:
                     string imageRelativePath = p.Zdjecie
                         .TrimStart('/')
                         .Replace('\\', '/');
 
                     if (!string.IsNullOrEmpty(imageRelativePath))
                     {
-                        // 2. BUDOWANIE PEŁNEJ ŚCIEŻKI:
                         string fullPath = System.IO.Path.Combine(
                             AppDomain.CurrentDomain.BaseDirectory,
                             imageRelativePath
                         );
 
-                        // 3. WERYFIKACJA I ŁADOWANIE:
                         if (System.IO.File.Exists(fullPath))
                         {
                             var bitmap = new BitmapImage();
@@ -267,12 +345,10 @@ namespace Projekt_zespołowy
                             bitmap.EndInit();
                             img.Source = bitmap;
 
-                            // ⭐️ DODANIE TYLKO RAZ PO PRAWIDŁOWYM ZAŁADOWANIU
                             panel.Children.Add(img);
                         }
                         else
                         {
-                            // Komunikat, gdy plik nie istnieje (dodajemy TextBlock, nie img)
                             panel.Children.Add(new TextBlock
                             {
                                 Text = $"[PLIK NIEZALEZIONY W: {fullPath}]",
@@ -285,7 +361,6 @@ namespace Projekt_zespołowy
                     }
                     else
                     {
-                        // Fallback, gdy ścieżka w bazie jest pusta
                         panel.Children.Add(new TextBlock
                         {
                             Text = "[brak ścieżki zdjęcia]",
@@ -296,7 +371,6 @@ namespace Projekt_zespołowy
                 }
                 catch (Exception ex)
                 {
-                    // Obsługa innych błędów ładowania
                     Console.WriteLine($"[BŁĄD KRYTYCZNY ŁADOWANIA ZDJĘCIA] Produkt: {p.Nazwa}. Błąd: {ex.Message}");
                     panel.Children.Add(new TextBlock
                     {
@@ -305,10 +379,8 @@ namespace Projekt_zespołowy
                         Height = 100
                     });
                 }
-                
 
             SkipImage:;
-
 
                 var nazwa = new TextBlock
                 {
@@ -327,7 +399,6 @@ namespace Projekt_zespołowy
                     TextAlignment = TextAlignment.Center
                 };
                 panel.Children.Add(cena);
-
 
                 var btnAdd = new Button
                 {
@@ -413,44 +484,24 @@ namespace Projekt_zespołowy
 
         public int CartCount => _cartCount;
 
-        // ⭐️ NOWA OBSŁUGA ZMIANY WARTOŚCI RANGE SLIDERA Z XAML
         private void PriceRange_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            // RangeSlider z MahApps.Metro ma właściwości LowerValue i UpperValue, 
-            // które zawierają aktualnie wybrane wartości.
-
-            // 1. Aktualizacja etykiet wyświetlających zakres cen
             LabelMin.Text = $"{PriceRange.LowerValue:F0} PLN";
             LabelMax.Text = $"{PriceRange.UpperValue:F0} PLN";
-
-            // 2. Opcjonalnie: automatyczne zastosowanie filtrów po zmianie suwaka. 
-            // Zalecam, aby to WYKOMENTOWAĆ, jeśli chcesz, aby filtry były stosowane
-            // tylko po kliknięciu przycisku "Zastosuj".
-
-            // ApplyFilters_Click(null, null); 
         }
 
-        // ⭐️ ZAKTUALIZOWANA GŁÓWNA METODA FILTRUJĄCA PO KATEGORII
         public void FilterByCategory(string? category)
         {
-            // 1. Zapisz nową aktywną kategorię (null, jeśli pusta)
             _currentCategory = string.IsNullOrWhiteSpace(category) ? null : Normalize(category);
-
-            // 2. Wyczyść filtry cen i marek
             ClearFilterControls();
-
-            // 3. Zastosuj nową kategorię (lub wszystkie, jeśli null)
             ApplyFilters_Click(null, null);
         }
 
-        // ⭐️ NOWA METODA DO RESETOWANIA KONTROLEK FILTRÓW
         private void ClearFilterControls()
         {
-            // Reset RangeSlidera
             PriceRange.LowerValue = PriceRange.Minimum;
             PriceRange.UpperValue = PriceRange.Maximum;
 
-            // Reset Checkboxów
             CheckLUK.IsChecked = false;
             CheckBosch.IsChecked = false;
             CheckATE.IsChecked = false;
@@ -480,12 +531,10 @@ namespace Projekt_zespołowy
                 .Replace("ź", "z");
         }
 
-        // ⭐️ ZAKTUALIZOWANA METODA: Obejmuje filtrowanie po KATEGORII
         private void ApplyFilters_Click(object sender, RoutedEventArgs e)
         {
             IEnumerable<Produkt> filtered;
 
-            // 1. FILTRUJ PO AKTYWNEJ KATEGORII (jeśli jest ustawiona)
             if (_currentCategory != null)
             {
                 filtered = _allProducts
@@ -496,11 +545,9 @@ namespace Projekt_zespołowy
                 filtered = _allProducts;
             }
 
-            // 2. Zbieranie filtrów cenowych
             decimal minPrice = (decimal)PriceRange.LowerValue;
             decimal maxPrice = (decimal)PriceRange.UpperValue;
 
-            // 3. Zbieranie filtrów marek (Producentów)
             var selectedBrands = new List<string>();
 
             if (CheckLUK.IsChecked == true) selectedBrands.Add(Normalize("LUK"));
@@ -510,14 +557,10 @@ namespace Projekt_zespołowy
             if (CheckSachs.IsChecked == true) selectedBrands.Add(Normalize("Sachs"));
             if (CheckValeo.IsChecked == true) selectedBrands.Add(Normalize("Valeo"));
 
-            // 4. FILTROWANIE PO CENIE I MARCE NA AKTUALNEJ LIŚCIE
-
-            // A. Filtrowanie po cenie (zawsze)
             filtered = filtered.Where(p =>
                 p.Cena >= minPrice && p.Cena <= maxPrice
             );
 
-            // B. Filtrowanie po marce (tylko jeśli wybrano)
             if (selectedBrands.Any())
             {
                 filtered = filtered.Where(p =>
@@ -525,7 +568,6 @@ namespace Projekt_zespołowy
                 );
             }
 
-            // 5. Aktualizacja listy i wyświetlania
             _currentFilteredProducts = filtered.ToList();
             WyswietlProdukty(_currentFilteredProducts);
 
@@ -537,51 +579,128 @@ namespace Projekt_zespołowy
 
         private void ClearFilters_Click(object sender, RoutedEventArgs e)
         {
-            // Reset kontroli UI i usunięcie aktywnej kategorii
             ClearFilterControls();
             _currentCategory = null;
 
-            // Wyświetlenie wszystkich produktów
             _currentFilteredProducts = new List<Produkt>(_allProducts);
             WyswietlProdukty(_currentFilteredProducts);
             MessageBox.Show("Filtry zostały zresetowane. Wyświetlono wszystkie produkty.");
         }
 
+        private void Oleje_Click(object sender, RoutedEventArgs e) => FilterByCategory("Oleje");
+        private void Filtry_Click(object sender, RoutedEventArgs e) => FilterByCategory("Filtry");
+        private void Sprzegla_Click(object sender, RoutedEventArgs e) => FilterByCategory("Sprzęgła");
+        private void KolaDwumasowe_Click(object sender, RoutedEventArgs e) => FilterByCategory("Koła Dwumasowe");
+        private void Elektryczny_Click(object sender, RoutedEventArgs e) => FilterByCategory("Układ Elektryczny");
+        private void Hamulcowy_Click(object sender, RoutedEventArgs e) => FilterByCategory("Układ Hamulcowy");
+        private void Napedowy_Click(object sender, RoutedEventArgs e) => FilterByCategory("Układ Napędowy");
 
-        // Metody do kliknięć kategorii
-        private void Oleje_Click(object sender, RoutedEventArgs e)
+        // =========================
+        // OPINIE: Task 13-14 (formularz + zapis do JSON)
+        // WYMAGA w MainWindow.xaml kontrolek:
+        // - TextBox x:Name="OpinionCommentBox"
+        // - TextBlock x:Name="RatingLabel"
+        // - 5 przycisków gwiazdek z Click="Star_Click" i Tag="1..5"
+        // - Button "Wyślij opinię" z Click="SubmitOpinion_Click"
+        // =========================
+
+        private void Star_Click(object sender, RoutedEventArgs e)
         {
-            FilterByCategory("Oleje");
+            if (sender is Button b && int.TryParse(b.Tag?.ToString(), out int rating))
+            {
+                _selectedRating = rating;
+
+                if (RatingLabel != null)
+                    RatingLabel.Text = $"{_selectedRating}/5";
+
+                if (b.Parent is Panel panel)
+                {
+                    foreach (var child in panel.Children.OfType<Button>())
+                    {
+                        if (int.TryParse(child.Tag?.ToString(), out int r))
+                            child.Foreground = r <= _selectedRating ? Brushes.Goldenrod : Brushes.Gray;
+                    }
+                }
+            }
         }
 
-        private void Filtry_Click(object sender, RoutedEventArgs e)
+        private void SubmitOpinion_Click(object sender, RoutedEventArgs e)
         {
-            FilterByCategory("Filtry");
+            if (!UserSession.IsLogged)
+            {
+                MessageBox.Show("Musisz być zalogowany, aby dodać opinię.");
+                return;
+            }
+
+            if (_selectedProductForOpinion == null)
+            {
+                MessageBox.Show("Najpierw kliknij kafelek produktu, który chcesz ocenić.");
+                return;
+            }
+
+            var comment = OpinionCommentBox?.Text?.Trim() ?? "";
+
+            if (_selectedRating < 1 || _selectedRating > 5)
+            {
+                MessageBox.Show("Wybierz ocenę 1–5.");
+                return;
+            }
+
+            if (comment.Length < 3)
+            {
+                MessageBox.Show("Komentarz jest zbyt krótki.");
+                return;
+            }
+
+            var opinion = new Opinion
+            {
+                ProductKey = _selectedProductForOpinion.Id.ToString(),
+                Rating = _selectedRating,
+                Comment = comment,
+                UserDisplayName = UserSession.Username,
+                IsApproved = false,
+                IsHidden = false
+            };
+
+            OpinionsStore.Add(opinion);
+            ShowOpinionsForSelectedProduct();
+
+            MessageBox.Show("Opinia wysłana do moderacji.");
+
+            _selectedRating = 0;
+            if (RatingLabel != null) RatingLabel.Text = "0/5";
+            if (OpinionCommentBox != null) OpinionCommentBox.Text = "";
+        }
+        private void ShowOpinionsForSelectedProduct()
+        {
+            if (_selectedProductForOpinion == null)
+            {
+                if (OpinionsList != null) OpinionsList.ItemsSource = null;
+                if (NoOpinionsText != null) NoOpinionsText.Visibility = Visibility.Visible;
+                if (OpinionsTitle != null) OpinionsTitle.Text = "Opinie";
+                return;
+            }
+
+            // Wczytaj najnowszy stan z pliku (bo admin mógł coś zmienić)
+            OpinionsStore.Load();
+
+            var list = OpinionsStore.Opinions
+                .Where(o =>
+                    o.ProductKey == _selectedProductForOpinion.Id.ToString() &&
+                    o.IsApproved &&
+                    !o.IsHidden)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToList();
+
+            if (OpinionsTitle != null)
+                OpinionsTitle.Text = $"Opinie: {_selectedProductForOpinion.Nazwa}";
+
+            if (OpinionsList != null)
+                OpinionsList.ItemsSource = list;
+
+            if (NoOpinionsText != null)
+                NoOpinionsText.Visibility = list.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void Sprzegla_Click(object sender, RoutedEventArgs e)
-        {
-            FilterByCategory("Sprzęgła");
-        }
-
-        private void KolaDwumasowe_Click(object sender, RoutedEventArgs e)
-        {
-            FilterByCategory("Koła Dwumasowe");
-        }
-
-        private void Elektryczny_Click(object sender, RoutedEventArgs e)
-        {
-            FilterByCategory("Układ Elektryczny");
-        }
-
-        private void Hamulcowy_Click(object sender, RoutedEventArgs e)
-        {
-            FilterByCategory("Układ Hamulcowy");
-        }
-
-        private void Napedowy_Click(object sender, RoutedEventArgs e)
-        {
-            FilterByCategory("Układ Napędowy");
-        }
     }
 }

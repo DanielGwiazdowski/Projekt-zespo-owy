@@ -33,10 +33,11 @@ namespace Projekt_zespołowy
         private readonly ObservableCollection<Produkt> produkty = new();
         private readonly string _connectionString = "Data Source=bazaAPH.db;Version=3;";
 
+        // ===== OPINIE (Task 15-16) =====
+        private ObservableCollection<Opinion> _opinionsView = new ObservableCollection<Opinion>();
+
         public AdminWindow()
         {
-
-
             InitializeComponent();
 
             // Kategorie przykładowe
@@ -53,10 +54,13 @@ namespace Projekt_zespołowy
             ZaladujProdukty();
             ZaladujZamowienia();
 
+            // ===== OPINIE: wczytaj i pokaż =====
+            OpinionsStore.Load();
+            RefreshOpinionsGrid();
         }
 
         private ObservableCollection<ZamowienieAdmin> Zamowienia
-        = new ObservableCollection<ZamowienieAdmin>(); 
+        = new ObservableCollection<ZamowienieAdmin>();
 
         private void ZaladujProdukty()
         {
@@ -240,6 +244,7 @@ namespace Projekt_zespołowy
 
             produkty.Remove(produkt);
         }
+
         private async void GenerujRaportSprzedazy_Click(object sender, RoutedEventArgs e)
         {
             if (DataOd.SelectedDate == null || DataDo.SelectedDate == null)
@@ -256,7 +261,7 @@ namespace Projekt_zespołowy
 
             try
             {
-                using var con = new SQLiteConnection(_connectionString); // używamy tej samej bazy co reszta
+                using var con = new SQLiteConnection(_connectionString);
                 await con.OpenAsync();
 
                 string sql = @"
@@ -296,7 +301,6 @@ namespace Projekt_zespołowy
             public double Suma { get; set; }
         }
 
-
         // ===== ID WYBRANEGO ZAMÓWIENIA =====
         private int SelectedOrderId = 0;
 
@@ -310,7 +314,6 @@ namespace Projekt_zespołowy
         }
 
         // ===== ZMIANA STATUSU =====
-
         private void ZmienStatusZamowienia_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedOrderId == 0)
@@ -359,7 +362,7 @@ namespace Projekt_zespołowy
                 SendStatusChangeEmail(SelectedOrderId, newStatus);
 
                 MessageBox.Show("✅ Status zmieniony i mail wysłany");
-                ZaladujZamowienia(); // odśwież listę
+                ZaladujZamowienia();
             }
             catch (Exception ex)
             {
@@ -372,7 +375,6 @@ namespace Projekt_zespołowy
             var mail = new MailMessage();
             mail.From = new MailAddress("esmeralda48@ethereal.email");
 
-            // testowo – Ethereal przyjmie każdy adres
             mail.To.Add("ehereal@email.pl");
 
             mail.Subject = $"Zmiana statusu zamówienia #{orderId}";
@@ -393,7 +395,6 @@ namespace Projekt_zespołowy
             smtp.Send(mail);
         }
 
-
         private async void EksportujRaportPDF_Click(object sender, RoutedEventArgs e)
         {
             if (DataOd.SelectedDate == null || DataDo.SelectedDate == null)
@@ -408,7 +409,6 @@ namespace Projekt_zespołowy
             decimal suma = 0;
             int liczba = 0;
 
-            // 1️⃣ Pobieranie danych z SQLite
             using (var con = new SQLiteConnection(_connectionString))
             {
                 await con.OpenAsync();
@@ -433,7 +433,6 @@ namespace Projekt_zespołowy
                 }
             }
 
-            // 2️⃣ Tworzenie PDF
             string filePath = System.IO.Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                 $"RaportSprzedazy_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
@@ -464,7 +463,6 @@ namespace Projekt_zespołowy
 
             doc.Save(filePath);
 
-            // 3️⃣ Automatyczne otwarcie PDF w przeglądarce
             System.Diagnostics.Process.Start(new ProcessStartInfo()
             {
                 FileName = filePath,
@@ -474,5 +472,75 @@ namespace Projekt_zespołowy
             MessageBox.Show("PDF został wygenerowany i otwarty.");
         }
 
+        // =====================
+        // OPINIE (Task 15-16)
+        // =====================
+        private void RefreshOpinionsGrid()
+        {
+            IEnumerable<Opinion> data = OpinionsStore.Opinions;
+
+            if (ShowOnlyPendingOpinions != null && ShowOnlyPendingOpinions.IsChecked == true)
+                data = data.Where(o => !o.IsApproved);
+
+            _opinionsView = new ObservableCollection<Opinion>(data.OrderByDescending(o => o.CreatedAt));
+
+            if (OpinionsGrid != null)
+                OpinionsGrid.ItemsSource = _opinionsView;
+        }
+
+        private void Opinie_Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            OpinionsStore.Load();
+            RefreshOpinionsGrid();
+        }
+
+        private void Opinie_FilterChanged(object sender, RoutedEventArgs e)
+        {
+            RefreshOpinionsGrid();
+        }
+
+        private void Opinie_Approve_Click(object sender, RoutedEventArgs e)
+        {
+            if (OpinionsGrid?.SelectedItem is not Opinion op)
+            {
+                MessageBox.Show("Zaznacz opinię w tabeli.");
+                return;
+            }
+
+            op.IsApproved = true;
+            OpinionsStore.Save();
+            RefreshOpinionsGrid();
+        }
+
+        private void Opinie_ToggleHide_Click(object sender, RoutedEventArgs e)
+        {
+            if (OpinionsGrid?.SelectedItem is not Opinion op)
+            {
+                MessageBox.Show("Zaznacz opinię w tabeli.");
+                return;
+            }
+
+            op.IsHidden = !op.IsHidden;
+            OpinionsStore.Save();
+            RefreshOpinionsGrid();
+        }
+
+        private void Opinie_Delete_Click(object sender, RoutedEventArgs e)
+        {
+            if (OpinionsGrid?.SelectedItem is not Opinion op)
+            {
+                MessageBox.Show("Zaznacz opinię w tabeli.");
+                return;
+            }
+
+            var res = MessageBox.Show("Usunąć opinię?", "Potwierdzenie",
+                MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+            if (res != MessageBoxResult.Yes)
+                return;
+
+            OpinionsStore.Remove(op.Id);
+            RefreshOpinionsGrid();
+        }
     }
 }

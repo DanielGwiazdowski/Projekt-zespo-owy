@@ -75,6 +75,8 @@
             Click="BtnLogin_Click"/>
                     <Button x:Name="BtnRegister" Content="Zarejestruj się" Style="{StaticResource AuthButtonStyle}" Background="#28A745"
             Click="BtnRegister_Click"/>
+					<Button x:Name="BtnClaims" Content="Reklamacje" Style="{StaticResource AuthButtonStyle}" Background="#6C757D"
+            Visibility="Collapsed" Click="BtnClaims_Click"/>
                     <Button x:Name="BtnLogout" Content="Wyloguj" Style="{StaticResource AuthButtonStyle}" Background="#DC3545"
             Click="BtnLogout_Click" Visibility="Collapsed"/>
                     <Button x:Name="BtnAdmin" Content="Panel Admina" Style="{StaticResource AuthButtonStyle}" Background="#FFA500"
